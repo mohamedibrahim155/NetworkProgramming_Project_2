@@ -18,12 +18,15 @@
     <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Shared\addressbook.pb.cc">
+    <ClCompile Include="Shared\authentication.pb.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shared\addressbook.pb.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Shared\authentication.pb.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
