@@ -12,87 +12,73 @@ Server::~Server()
  void Server::Initialize()
 {
 
-	WSADATA wsaData;
-	int intResult;
-	serverSocket = INVALID_SOCKET;
-	SOCKET ClientSocket = INVALID_SOCKET;
+	 // Initialize Winsock
+	 WSADATA wsData;
+	 WORD ver = MAKEWORD(2, 2);
+	 WSAStartup(ver, &wsData);
 
-	struct addrinfo* result = NULL;
-	struct addrinfo hints;
+	 // Create socket
+	 SOCKET serverSocket = socket(AF_INET, SOCK_STREAM, 0);
+	 SOCKET server2Socket = socket(AF_INET, SOCK_STREAM, 0);
+	 // Bind the socket to an IP address and port
+	 sockaddr_in hint;
+	 hint.sin_family = AF_INET;
+	 hint.sin_port = htons(54000);
+	 hint.sin_addr.S_un.S_addr = INADDR_ANY;
 
+	 sockaddr_in server2Hint;
+	 server2Hint.sin_family = AF_INET;
+	 server2Hint.sin_port = htons(54001); // Assuming Server2 is on a different port
+	 inet_pton(AF_INET, "127.0.0.1", &server2Hint.sin_addr);
 
+	 bind(serverSocket, (sockaddr*)&hint, sizeof(hint));
 
-	int iSendResult;
-	intResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
-	if (intResult != 0) {
-		printf("WSAStartup failed with error: %d\n", intResult);
-		return;
-	}
-	printf("SAStartup  Successful in client\n");
-
-
-	printf("WSAStartup success in server \n");
-	ZeroMemory(&hints, sizeof(hints));
-	hints.ai_family = AF_INET;
-	hints.ai_socktype = SOCK_STREAM;
-	hints.ai_protocol = IPPROTO_TCP;
-	hints.ai_flags = AI_PASSIVE;
+	 // Tell Winsock the socket is for listening
+	 listen(serverSocket, SOMAXCONN);
 
 
-	intResult = getaddrinfo("localhost", DEFAULT_PORT, &hints, &result);
-	if (intResult != 0)
-	{
-		printf("getaddrinfo failed with error: %d\n", intResult);
-		WSACleanup();
-		return;
-	}
+	
 
-	printf("getaddrinfo success in server \n");
-
-
-	serverSocket = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
-	if (serverSocket == INVALID_SOCKET)
-	{
-		printf("socket failed with error: %ld\n", WSAGetLastError());
-		freeaddrinfo(result);
-		WSACleanup();
-		return;
-	}
-
-
-	intResult = bind(serverSocket, result->ai_addr, (int)result->ai_addrlen);
-	if (intResult == SOCKET_ERROR)
-	{
-		printf("bind failed with error: %d\n", WSAGetLastError());
-		freeaddrinfo(result);
-		closesocket(serverSocket);
-		WSACleanup();
-		return;
-	}
-	printf("Socket  binded  success in server \n");
-	freeaddrinfo(result);
-
-
-	intResult = listen(serverSocket, SOMAXCONN);
-	if (intResult == SOCKET_ERROR)
-	{
-		printf("listen failed with error: %d\n", WSAGetLastError());
-		closesocket(serverSocket);
-		WSACleanup();
-		return;
-	}
+	 connect(server2Socket, (sockaddr*)&server2Hint, sizeof(server2Hint));
 
 
 
-	//////////ACCEPT CLIENT"S SCOKET HERE
-	// 
-	///////////////////
-	///////////////////
-	AcceptClientConnections();
+	 // Wait for a connection
+	 sockaddr_in client;
+	 int clientSize = sizeof(client);
 
-	ServerClose();
-	// cleanup
-	//closesocket(ClientSocket);
+	 SOCKET clientSocket = accept(serverSocket, (sockaddr*)&client, &clientSize);
+
+	 // Receive message from client
+	 char buf[4096];
+	 ZeroMemory(buf, sizeof(buf));
+	 recv(clientSocket, buf, sizeof(buf), 0);
+	 std::cout << "Received from client: " << buf << std::endl;
+
+	 // Connect to Server2
+	
+	
+	 // Send the message to Server2
+	 send(server2Socket, buf, strlen(buf) + 1, 0);
+
+	 // Receive a completion message from Server2
+	 ZeroMemory(buf, sizeof(buf));
+	 recv(server2Socket, buf, sizeof(buf), 0);
+	 std::cout << "Received from Server2: " << buf << std::endl;
+
+	 // Send the completion message back to the client
+	 send(clientSocket, buf, strlen(buf) + 1, 0);
+
+	 // Close connection to Server2
+	 closesocket(server2Socket);
+
+	 // Close connection to the client
+	 closesocket(clientSocket);
+
+	 // Cleanup Winsock
+	 WSACleanup();
+
+	 return;
 
 }
 
@@ -143,20 +129,21 @@ void Server::AcceptClientConnections()
 
 void Server::ReceiveAndPrintIncomingMessage(SOCKET clientSocket)
 {
-	const int buffersize = DEFAULT_BUFLEN;
+	char buf[4096];
+	ZeroMemory(buf, sizeof(buf));
 	while (true)
 	{
 
 
-		std::vector<uint8_t> recvBuffer(buffersize);
-		int amountReceived = recv(clientSocket, reinterpret_cast<char*>(&recvBuffer[0]), buffersize, 0);
+	
+		int amountReceived = recv(clientSocket, buf, sizeof(buf), 0);
 		if (amountReceived > 0)
 		{
-
+			std::cout << "Received from Client: " << buf << std::endl;
 
 			/////////////////////////////////////////////////
 			// 
-			// SEND MESSAGES TO ANOTHER SERVER AND  RECEIVE IT 
+			// SEND MESSAGES TO  SERVER 2 AND  RECEIVE IT 
 			// 
 			// 
 			// ///////////////////////////////////////////////
