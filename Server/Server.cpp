@@ -54,7 +54,10 @@ Server::~Server()
 	 ZeroMemory(buf, sizeof(buf));
 	 recv(clientSocket, buf, sizeof(buf), 0);
 	 std::cout << "Received from client: " << buf << std::endl;
-
+    CreateAccountWeb createaccout;
+//	 createaccount.ParseFromString(buf);
+	// std::cout << "Account email = " << createaccount.email() << std::endl;
+	// std::cout << "request id = " << createaccount.request_id() << std::endl;
 	 // Connect to Server2
 	
 	

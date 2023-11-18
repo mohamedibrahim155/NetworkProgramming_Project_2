@@ -25,9 +25,16 @@ void Client::Initialize()
 
     connect(clientSocket, (sockaddr*)&hint, sizeof(hint));
 
-    // Send a message to Server1
-    const char* message = "Hello, Server1!";
-    send(clientSocket, message, strlen(message) + 1, 0);
+    CreateAccountWeb createWeb;
+    createWeb.set_email("MohamedIbrahim@gmail.com");
+    createWeb.set_plaintext_password("asdada");
+
+    std::string serializeCreateWeb;
+
+    createWeb.SerializeToString(&serializeCreateWeb);
+
+
+    send(clientSocket, serializeCreateWeb.c_str(), strlen(serializeCreateWeb.c_str()) + 1, 0);
 
     // Receive a message from Server1
     char buf[4096];

@@ -1,6 +1,7 @@
 #include "AuthenticateServer.h"
 
 
+
 AuthenticateServer::AuthenticateServer()
 {
 }
@@ -41,7 +42,7 @@ void AuthenticateServer::Initialize()
     ZeroMemory(buf, sizeof(buf));
     recv(server1Socket, buf, sizeof(buf), 0);
     std::cout << "Received from Server1: " << buf << std::endl;
-
+    CreateAccountWeb web;
     // Send a completion message to Server1
     const char* completionMessage = "Completed";
     send(server1Socket, completionMessage, strlen(completionMessage) + 1, 0);
