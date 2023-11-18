@@ -11,6 +11,13 @@ public:
 	void Disconnect();
 
 	sql::ResultSet* Select(const char* querry);
+	sql::PreparedStatement* PreparedStatement(const char* querry);
+	int Update(const char* querry);
+	int Insert(const char* querry);
+
+	sql::Connection* GetConnection();
+	sql::ResultSet* GetResult();
+	sql::Statement* GetStatement();
 
 private:
 

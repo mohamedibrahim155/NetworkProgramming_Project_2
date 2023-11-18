@@ -64,3 +64,35 @@ MySQLUtil::~MySQLUtil()
 	 return result;
 
  }
+
+ sql::PreparedStatement* MySQLUtil::PreparedStatement(const char* querry)
+ {
+	 return GetConnection()->prepareStatement(querry);
+ }
+
+ int MySQLUtil::Update(const char* querry)
+ {
+	 int update = statement->executeUpdate(querry);
+	 return update;
+ }
+
+ int MySQLUtil::Insert(const char* querry)
+ {
+	 int insert = statement->executeUpdate(querry);
+	 return insert;
+ }
+
+ sql::Connection* MySQLUtil::GetConnection()
+ {
+	 return connection;
+ }
+
+ sql::ResultSet* MySQLUtil::GetResult()
+ {
+	 return result;
+ }
+
+ sql::Statement* MySQLUtil::GetStatement()
+ {
+	 return statement;
+ }
