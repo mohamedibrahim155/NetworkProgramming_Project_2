@@ -34,10 +34,11 @@ public:
 
 	void Initialize();
 	void ServerClose();
-	void AcceptClientConnections();
+	void AcceptClientConnections(SOCKET serverSocket);
 
 	void ReceiveAndPrintIncomingMessage(SOCKET clientSocket);
 	void ReceiveAndPrintIncomingMessageOnSeparateThread(SOCKET clientSocket);
+	void SendMessagestoClient(SOCKET clientSocket);
   
 	
 

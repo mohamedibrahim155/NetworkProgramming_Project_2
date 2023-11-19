@@ -29,7 +29,7 @@ public:
 	void CloseClient();
 
 	void ReceiveMessages(SOCKET sock);
-	void SendToServer(SOCKET serverSocket);
+	void SendToServer(SOCKET sock);
 
 private:
 	SOCKET clientSocket;
