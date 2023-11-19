@@ -47,7 +47,7 @@ struct TableStruct_authentication_2eproto {
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::PROTOBUF_NAMESPACE_ID::internal::AuxiliaryParseTableField aux[]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
-  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTable schema[6]
+  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTable schema[7]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::PROTOBUF_NAMESPACE_ID::internal::FieldMetadata field_metadata[];
   static const ::PROTOBUF_NAMESPACE_ID::internal::SerializationTable serialization_table[];
@@ -72,6 +72,9 @@ extern CreateAccountWebFailureDefaultTypeInternal _CreateAccountWebFailure_defau
 class CreateAccountWebSuccess;
 struct CreateAccountWebSuccessDefaultTypeInternal;
 extern CreateAccountWebSuccessDefaultTypeInternal _CreateAccountWebSuccess_default_instance_;
+class MessageAndCommand;
+struct MessageAndCommandDefaultTypeInternal;
+extern MessageAndCommandDefaultTypeInternal _MessageAndCommand_default_instance_;
 PROTOBUF_NAMESPACE_OPEN
 template<> ::AuthenticateWeb* Arena::CreateMaybeMessage<::AuthenticateWeb>(Arena*);
 template<> ::AuthenticateWebFailure* Arena::CreateMaybeMessage<::AuthenticateWebFailure>(Arena*);
@@ -79,6 +82,7 @@ template<> ::AuthenticateWebSuccess* Arena::CreateMaybeMessage<::AuthenticateWeb
 template<> ::CreateAccountWeb* Arena::CreateMaybeMessage<::CreateAccountWeb>(Arena*);
 template<> ::CreateAccountWebFailure* Arena::CreateMaybeMessage<::CreateAccountWebFailure>(Arena*);
 template<> ::CreateAccountWebSuccess* Arena::CreateMaybeMessage<::CreateAccountWebSuccess>(Arena*);
+template<> ::MessageAndCommand* Arena::CreateMaybeMessage<::MessageAndCommand>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 
 enum CreateAccountWebFailure_Reason : int {
@@ -131,6 +135,35 @@ inline bool AuthenticateWebFailure_Reason_Parse(
     ::PROTOBUF_NAMESPACE_ID::ConstStringParam name, AuthenticateWebFailure_Reason* value) {
   return ::PROTOBUF_NAMESPACE_ID::internal::ParseNamedEnum<AuthenticateWebFailure_Reason>(
     AuthenticateWebFailure_Reason_descriptor(), name, value);
+}
+enum MessageAndCommand_Command : int {
+  MessageAndCommand_Command_CREATE_ACCOUNT_WEB = 0,
+  MessageAndCommand_Command_CREATE_ACCOUNT_WEB_SUCCESS = 1,
+  MessageAndCommand_Command_CREATE_ACCOUNT_WEB_FAILURE = 2,
+  MessageAndCommand_Command_AUTHENTICATE_WEB = 3,
+  MessageAndCommand_Command_AUTHENTICATE_WEB_SUCCESS = 4,
+  MessageAndCommand_Command_AUTHENTICATE_WEB_FAILURE = 5,
+  MessageAndCommand_Command_MessageAndCommand_Command_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<::PROTOBUF_NAMESPACE_ID::int32>::min(),
+  MessageAndCommand_Command_MessageAndCommand_Command_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<::PROTOBUF_NAMESPACE_ID::int32>::max()
+};
+bool MessageAndCommand_Command_IsValid(int value);
+constexpr MessageAndCommand_Command MessageAndCommand_Command_Command_MIN = MessageAndCommand_Command_CREATE_ACCOUNT_WEB;
+constexpr MessageAndCommand_Command MessageAndCommand_Command_Command_MAX = MessageAndCommand_Command_AUTHENTICATE_WEB_FAILURE;
+constexpr int MessageAndCommand_Command_Command_ARRAYSIZE = MessageAndCommand_Command_Command_MAX + 1;
+
+const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* MessageAndCommand_Command_descriptor();
+template<typename T>
+inline const std::string& MessageAndCommand_Command_Name(T enum_t_value) {
+  static_assert(::std::is_same<T, MessageAndCommand_Command>::value ||
+    ::std::is_integral<T>::value,
+    "Incorrect type passed to function MessageAndCommand_Command_Name.");
+  return ::PROTOBUF_NAMESPACE_ID::internal::NameOfEnum(
+    MessageAndCommand_Command_descriptor(), enum_t_value);
+}
+inline bool MessageAndCommand_Command_Parse(
+    ::PROTOBUF_NAMESPACE_ID::ConstStringParam name, MessageAndCommand_Command* value) {
+  return ::PROTOBUF_NAMESPACE_ID::internal::ParseNamedEnum<MessageAndCommand_Command>(
+    MessageAndCommand_Command_descriptor(), name, value);
 }
 // ===================================================================
 
@@ -1176,6 +1209,203 @@ class AuthenticateWebFailure final :
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_authentication_2eproto;
 };
+// -------------------------------------------------------------------
+
+class MessageAndCommand final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:MessageAndCommand) */ {
+ public:
+  inline MessageAndCommand() : MessageAndCommand(nullptr) {}
+  ~MessageAndCommand() override;
+  explicit constexpr MessageAndCommand(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  MessageAndCommand(const MessageAndCommand& from);
+  MessageAndCommand(MessageAndCommand&& from) noexcept
+    : MessageAndCommand() {
+    *this = ::std::move(from);
+  }
+
+  inline MessageAndCommand& operator=(const MessageAndCommand& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline MessageAndCommand& operator=(MessageAndCommand&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const MessageAndCommand& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const MessageAndCommand* internal_default_instance() {
+    return reinterpret_cast<const MessageAndCommand*>(
+               &_MessageAndCommand_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    6;
+
+  friend void swap(MessageAndCommand& a, MessageAndCommand& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(MessageAndCommand* other) {
+    if (other == this) return;
+    if (GetOwningArena() == other->GetOwningArena()) {
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(MessageAndCommand* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline MessageAndCommand* New() const final {
+    return new MessageAndCommand();
+  }
+
+  MessageAndCommand* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
+    return CreateMaybeMessage<MessageAndCommand>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const MessageAndCommand& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom(const MessageAndCommand& from);
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message* to, const ::PROTOBUF_NAMESPACE_ID::Message& from);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  ::PROTOBUF_NAMESPACE_ID::uint8* _InternalSerialize(
+      ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(MessageAndCommand* other);
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "MessageAndCommand";
+  }
+  protected:
+  explicit MessageAndCommand(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  private:
+  static void ArenaDtor(void* object);
+  inline void RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  typedef MessageAndCommand_Command Command;
+  static constexpr Command CREATE_ACCOUNT_WEB =
+    MessageAndCommand_Command_CREATE_ACCOUNT_WEB;
+  static constexpr Command CREATE_ACCOUNT_WEB_SUCCESS =
+    MessageAndCommand_Command_CREATE_ACCOUNT_WEB_SUCCESS;
+  static constexpr Command CREATE_ACCOUNT_WEB_FAILURE =
+    MessageAndCommand_Command_CREATE_ACCOUNT_WEB_FAILURE;
+  static constexpr Command AUTHENTICATE_WEB =
+    MessageAndCommand_Command_AUTHENTICATE_WEB;
+  static constexpr Command AUTHENTICATE_WEB_SUCCESS =
+    MessageAndCommand_Command_AUTHENTICATE_WEB_SUCCESS;
+  static constexpr Command AUTHENTICATE_WEB_FAILURE =
+    MessageAndCommand_Command_AUTHENTICATE_WEB_FAILURE;
+  static inline bool Command_IsValid(int value) {
+    return MessageAndCommand_Command_IsValid(value);
+  }
+  static constexpr Command Command_MIN =
+    MessageAndCommand_Command_Command_MIN;
+  static constexpr Command Command_MAX =
+    MessageAndCommand_Command_Command_MAX;
+  static constexpr int Command_ARRAYSIZE =
+    MessageAndCommand_Command_Command_ARRAYSIZE;
+  static inline const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor*
+  Command_descriptor() {
+    return MessageAndCommand_Command_descriptor();
+  }
+  template<typename T>
+  static inline const std::string& Command_Name(T enum_t_value) {
+    static_assert(::std::is_same<T, Command>::value ||
+      ::std::is_integral<T>::value,
+      "Incorrect type passed to function Command_Name.");
+    return MessageAndCommand_Command_Name(enum_t_value);
+  }
+  static inline bool Command_Parse(::PROTOBUF_NAMESPACE_ID::ConstStringParam name,
+      Command* value) {
+    return MessageAndCommand_Command_Parse(name, value);
+  }
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kMessageDataFieldNumber = 2,
+    kCommandFieldNumber = 1,
+  };
+  // string messageData = 2;
+  void clear_messagedata();
+  const std::string& messagedata() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_messagedata(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_messagedata();
+  PROTOBUF_MUST_USE_RESULT std::string* release_messagedata();
+  void set_allocated_messagedata(std::string* messagedata);
+  private:
+  const std::string& _internal_messagedata() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_messagedata(const std::string& value);
+  std::string* _internal_mutable_messagedata();
+  public:
+
+  // .MessageAndCommand.Command command = 1;
+  void clear_command();
+  ::MessageAndCommand_Command command() const;
+  void set_command(::MessageAndCommand_Command value);
+  private:
+  ::MessageAndCommand_Command _internal_command() const;
+  void _internal_set_command(::MessageAndCommand_Command value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:MessageAndCommand)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr messagedata_;
+  int command_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  friend struct ::TableStruct_authentication_2eproto;
+};
 // ===================================================================
 
 
@@ -1637,9 +1867,81 @@ inline void AuthenticateWebFailure::set_reason(::AuthenticateWebFailure_Reason v
   // @@protoc_insertion_point(field_set:AuthenticateWebFailure.reason)
 }
 
+// -------------------------------------------------------------------
+
+// MessageAndCommand
+
+// .MessageAndCommand.Command command = 1;
+inline void MessageAndCommand::clear_command() {
+  command_ = 0;
+}
+inline ::MessageAndCommand_Command MessageAndCommand::_internal_command() const {
+  return static_cast< ::MessageAndCommand_Command >(command_);
+}
+inline ::MessageAndCommand_Command MessageAndCommand::command() const {
+  // @@protoc_insertion_point(field_get:MessageAndCommand.command)
+  return _internal_command();
+}
+inline void MessageAndCommand::_internal_set_command(::MessageAndCommand_Command value) {
+  
+  command_ = value;
+}
+inline void MessageAndCommand::set_command(::MessageAndCommand_Command value) {
+  _internal_set_command(value);
+  // @@protoc_insertion_point(field_set:MessageAndCommand.command)
+}
+
+// string messageData = 2;
+inline void MessageAndCommand::clear_messagedata() {
+  messagedata_.ClearToEmpty();
+}
+inline const std::string& MessageAndCommand::messagedata() const {
+  // @@protoc_insertion_point(field_get:MessageAndCommand.messageData)
+  return _internal_messagedata();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void MessageAndCommand::set_messagedata(ArgT0&& arg0, ArgT... args) {
+ 
+ messagedata_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:MessageAndCommand.messageData)
+}
+inline std::string* MessageAndCommand::mutable_messagedata() {
+  std::string* _s = _internal_mutable_messagedata();
+  // @@protoc_insertion_point(field_mutable:MessageAndCommand.messageData)
+  return _s;
+}
+inline const std::string& MessageAndCommand::_internal_messagedata() const {
+  return messagedata_.Get();
+}
+inline void MessageAndCommand::_internal_set_messagedata(const std::string& value) {
+  
+  messagedata_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
+}
+inline std::string* MessageAndCommand::_internal_mutable_messagedata() {
+  
+  return messagedata_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
+}
+inline std::string* MessageAndCommand::release_messagedata() {
+  // @@protoc_insertion_point(field_release:MessageAndCommand.messageData)
+  return messagedata_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
+}
+inline void MessageAndCommand::set_allocated_messagedata(std::string* messagedata) {
+  if (messagedata != nullptr) {
+    
+  } else {
+    
+  }
+  messagedata_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), messagedata,
+      GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set_allocated:MessageAndCommand.messageData)
+}
+
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------
@@ -1665,6 +1967,11 @@ template <> struct is_proto_enum< ::AuthenticateWebFailure_Reason> : ::std::true
 template <>
 inline const EnumDescriptor* GetEnumDescriptor< ::AuthenticateWebFailure_Reason>() {
   return ::AuthenticateWebFailure_Reason_descriptor();
+}
+template <> struct is_proto_enum< ::MessageAndCommand_Command> : ::std::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< ::MessageAndCommand_Command>() {
+  return ::MessageAndCommand_Command_descriptor();
 }
 
 PROTOBUF_NAMESPACE_CLOSE

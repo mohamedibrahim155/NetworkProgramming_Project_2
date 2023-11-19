@@ -25,18 +25,46 @@ void Client::Initialize()
 
     connect(clientSocket, (sockaddr*)&hint, sizeof(hint));
 
-    CreateAccountWeb createWeb;
-    createWeb.set_email("MohamedIbrahim@gmail.com");
-    createWeb.set_plaintext_password("mohamed");
-
-    std::string serializeCreateWeb;
-
-    createWeb.SerializeToString(&serializeCreateWeb);
-
    
-   
-    std::string message = serializeCreateWeb;
 
+    std::string serializeString;
+    std::string userInput,email,password;
+    std::cout << "ENTER COMMAND REGISTER OR AUTHENTICATE : ";
+    std::cin >> userInput;
+    std::cout << "ENTER EMAIL : ";
+    std::cin >> email;  
+    std::cout << "ENTER PASSWORD : ";
+    std::cin >> password;
+
+    MessageAndCommand messageAndCommand;
+    if (userInput =="REGISTER")
+    {
+        std::string createwebSerializer;
+        CreateAccountWeb createWeb;
+        createWeb.set_email(email);
+        createWeb.set_plaintext_password(password);
+        createWeb.SerializeToString(&createwebSerializer);
+
+        messageAndCommand.set_command(MessageAndCommand_Command_CREATE_ACCOUNT_WEB);
+        messageAndCommand.set_messagedata(createwebSerializer);
+        messageAndCommand.SerializeToString(&serializeString);
+
+    }
+    else
+    {
+        std::string AuthenticateSerializer;
+        AuthenticateWeb authenticate;
+        authenticate.set_email(email);
+        authenticate.set_plaintext_password(password);
+        authenticate.SerializeToString(&AuthenticateSerializer);
+
+        messageAndCommand.set_command(MessageAndCommand_Command_AUTHENTICATE_WEB);
+        messageAndCommand.set_messagedata(AuthenticateSerializer);
+        messageAndCommand.SerializeToString(&serializeString);
+
+    }
+
+    std::string message = serializeString;
     int messageLength = message.size();
     int lengthToSend = htonl(messageLength);
     std::vector<uint8_t> sendDataBuffer(sizeof(int) + message.size());
@@ -46,6 +74,68 @@ void Client::Initialize()
     // Send the entire buffer
     send(clientSocket, reinterpret_cast<char*>(sendDataBuffer.data()), sendDataBuffer.size(), 0);
 
+
+
+
+	int lengthPrefix;
+	int bytesReceived = recv(clientSocket, reinterpret_cast<char*>(&lengthPrefix), sizeof(int), 0);
+	if (bytesReceived != sizeof(int))
+	{
+		// Handle error
+	}
+	else
+	{
+
+		int expectedLength = ntohl(lengthPrefix);
+		std::vector<uint8_t> receiveDataBuffer(expectedLength);
+		bytesReceived = recv(clientSocket, reinterpret_cast<char*>(receiveDataBuffer.data()), expectedLength, 0);
+
+		if (bytesReceived != expectedLength)
+		{
+
+		}
+		else
+		{
+			std::string receivedData(receiveDataBuffer.begin(), receiveDataBuffer.end());
+
+			MessageAndCommand messageAndCommand;
+			messageAndCommand.ParseFromString(receivedData);
+			CreateAccountWeb CreatewebDeserializer;
+			AuthenticateWeb AuthenticateWebDeserializer;
+			CreateAccountWebSuccess CreateAccountWebSuccess;
+			switch (messageAndCommand.command())
+			{
+
+			case MessageAndCommand_Command_CREATE_ACCOUNT_WEB:
+				CreatewebDeserializer.ParseFromString(messageAndCommand.messagedata());
+				std::cout << "EMAIL : " << CreatewebDeserializer.email() << std::endl;
+				std::cout << "PASSWORD : " << CreatewebDeserializer.plaintext_password() << std::endl;
+				break;
+			case MessageAndCommand_Command_CREATE_ACCOUNT_WEB_SUCCESS:
+				CreateAccountWebSuccess.ParseFromString(messageAndCommand.messagedata());
+				std::cout << "REQUEST ID : " << CreateAccountWebSuccess.request_id() << std::endl;
+				std::cout << "USER ID : " << CreateAccountWebSuccess.user_id() << std::endl;
+				break;
+
+			case MessageAndCommand_Command_CREATE_ACCOUNT_WEB_FAILURE:
+				break;
+
+
+
+			case MessageAndCommand_Command_AUTHENTICATE_WEB:
+				AuthenticateWebDeserializer.ParseFromString(messageAndCommand.messagedata());
+				std::cout << "EMAIL : " << AuthenticateWebDeserializer.email() << std::endl;
+				std::cout << "PASSWORD : " << AuthenticateWebDeserializer.plaintext_password() << std::endl;
+				break;
+			case MessageAndCommand_Command_AUTHENTICATE_WEB_FAILURE:
+				break;
+			case MessageAndCommand_Command_AUTHENTICATE_WEB_SUCCESS:
+				break;
+
+			}
+
+		}
+	}
 
     // Receive a message from Server1
     char buf[4096];

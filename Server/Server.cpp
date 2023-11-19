@@ -49,6 +49,7 @@ Server::~Server()
 
 	 SOCKET clientSocket = accept(serverSocket, (sockaddr*)&client, &clientSize);
 
+	 // Receive message from client
 	 int lengthPrefix;
 	 int bytesReceived = recv(clientSocket, reinterpret_cast<char*>(&lengthPrefix), sizeof(int), 0);
 	 if (bytesReceived != sizeof(int))
@@ -59,10 +60,6 @@ Server::~Server()
 	 {
 		
 		 int expectedLength = ntohl(lengthPrefix);
-
-		 std::cout << "expectedLength length " << expectedLength << std::endl;
-
-		
 		 std::vector<uint8_t> receiveDataBuffer(expectedLength);
 		 bytesReceived = recv(clientSocket, reinterpret_cast<char*>(receiveDataBuffer.data()), expectedLength, 0);
 
@@ -74,42 +71,81 @@ Server::~Server()
 		 {
 			 std::string receivedData(receiveDataBuffer.begin(), receiveDataBuffer.end());
 			
-			 CreateAccountWeb web;
-			 web.ParseFromString(receivedData);
-			 std::cout << "Received client's email =" << web.email() << std::endl;
-			 std::cout << "Received client's password =" << web.plaintext_password() << std::endl;
+			 MessageAndCommand messageAndCommand;
+			 messageAndCommand.ParseFromString(receivedData);
+			 CreateAccountWeb CreatewebDeserializer;
+			 AuthenticateWeb AuthenticateWebDeserializer;
+			 switch (messageAndCommand.command())
+			 {
+
+			 case MessageAndCommand_Command_CREATE_ACCOUNT_WEB:
+				 CreatewebDeserializer.ParseFromString(messageAndCommand.messagedata());
+				 std::cout << "EMAIL : " << CreatewebDeserializer.email() << std::endl;
+				 std::cout << "PASSWORD : " << CreatewebDeserializer.plaintext_password() << std::endl;
+				 break;
+			 case MessageAndCommand_Command_CREATE_ACCOUNT_WEB_SUCCESS:
+				 break;
+
+			 case MessageAndCommand_Command_CREATE_ACCOUNT_WEB_FAILURE:
+				 break;
+
+
+
+			 case MessageAndCommand_Command_AUTHENTICATE_WEB:	
+				 AuthenticateWebDeserializer.ParseFromString(messageAndCommand.messagedata());
+				 std::cout << "EMAIL : " << AuthenticateWebDeserializer.email() << std::endl;
+				 std::cout << "PASSWORD : " << AuthenticateWebDeserializer.plaintext_password() << std::endl;
+				 break;
+			 case MessageAndCommand_Command_AUTHENTICATE_WEB_FAILURE:
+				 break;
+			 case MessageAndCommand_Command_AUTHENTICATE_WEB_SUCCESS :
+				 break;
+
+			 }
+			
 		 }
 	 }
 	 
+	 char buf[512];
+
+	
+	///////////////////////////////// // Connect to Server2
+	///////
+	////////////////////////
+	 //// Send the message to Server2
+	 //send(server2Socket, buf, strlen(buf) + 1, 0);
+
+	 //// Receive a completion message from Server2
+	 //ZeroMemory(buf, sizeof(buf));
+	 //recv(server2Socket, buf, sizeof(buf), 0);
+	 //std::cout << "Received from Server2: " << buf << std::endl;
+	 ////////////////////////////////////////////////////////////////////////////////////////////
+	 MessageAndCommand messageAndCommand;
+	 std::string serializeString;
+
+
+	 std::string  CreateAccountWebSuccessserilizer;
+	 CreateAccountWebSuccess success;
+	 success.set_user_id(1);
+	 success.set_request_id(2);
+	 success.SerializeToString(&CreateAccountWebSuccessserilizer);
+
+	 messageAndCommand.set_command(MessageAndCommand_Command_CREATE_ACCOUNT_WEB_SUCCESS);
+	 messageAndCommand.set_messagedata(CreateAccountWebSuccessserilizer);
+	 messageAndCommand.SerializeToString(&serializeString);
+
+
 
 
 	
+	 std::string message = serializeString;
+	 int messageLength = message.size();
+	 int lengthToSend = htonl(messageLength);
+	 std::vector<uint8_t> sendDataBuffer(sizeof(int) + message.size());
+	 memcpy(sendDataBuffer.data(), &lengthToSend, sizeof(int));
+	 memcpy(sendDataBuffer.data() + sizeof(int), message.data(), message.size());
 
-	 // Receive message from client
-	 char buf[4];
-	// Message received;
-	// ZeroMemory(buf, sizeof(buf));
-//	 recv(clientSocket, buf, sizeof(buf), 0);
-	
-
-
-	// std::cout << "Received from Message length2: " << received.messageLength << std::endl;
-	// received.messageLength = std::intto;
-
-	
-	 // Connect to Server2
-	
-	
-	 // Send the message to Server2
-	 send(server2Socket, buf, strlen(buf) + 1, 0);
-
-	 // Receive a completion message from Server2
-	 ZeroMemory(buf, sizeof(buf));
-	 recv(server2Socket, buf, sizeof(buf), 0);
-	 std::cout << "Received from Server2: " << buf << std::endl;
-
-	 // Send the completion message back to the client
-	 send(clientSocket, buf, strlen(buf) + 1, 0);
+	 send(clientSocket, reinterpret_cast<char*>(sendDataBuffer.data()), sendDataBuffer.size(), 0);
 
 	 // Close connection to Server2
 	 closesocket(server2Socket);

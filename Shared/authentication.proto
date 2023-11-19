@@ -41,3 +41,19 @@ message AuthenticateWebFailure {
   }
   Reason reason = 2;
 }
+
+message MessageAndCommand
+{
+
+enum  Command{
+  CREATE_ACCOUNT_WEB =0;
+CREATE_ACCOUNT_WEB_SUCCESS=1;
+CREATE_ACCOUNT_WEB_FAILURE=2;
+AUTHENTICATE_WEB=3;
+AUTHENTICATE_WEB_SUCCESS=4;
+AUTHENTICATE_WEB_FAILURE=5;
+  }
+  Command command =1;
+string messageData=2;
+}
+

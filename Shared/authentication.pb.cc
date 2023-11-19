@@ -99,8 +99,22 @@ struct AuthenticateWebFailureDefaultTypeInternal {
   };
 };
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT AuthenticateWebFailureDefaultTypeInternal _AuthenticateWebFailure_default_instance_;
-static ::PROTOBUF_NAMESPACE_ID::Metadata file_level_metadata_authentication_2eproto[6];
-static const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* file_level_enum_descriptors_authentication_2eproto[2];
+constexpr MessageAndCommand::MessageAndCommand(
+  ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized)
+  : messagedata_(&::PROTOBUF_NAMESPACE_ID::internal::fixed_address_empty_string)
+  , command_(0)
+{}
+struct MessageAndCommandDefaultTypeInternal {
+  constexpr MessageAndCommandDefaultTypeInternal()
+    : _instance(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized{}) {}
+  ~MessageAndCommandDefaultTypeInternal() {}
+  union {
+    MessageAndCommand _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT MessageAndCommandDefaultTypeInternal _MessageAndCommand_default_instance_;
+static ::PROTOBUF_NAMESPACE_ID::Metadata file_level_metadata_authentication_2eproto[7];
+static const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* file_level_enum_descriptors_authentication_2eproto[3];
 static constexpr ::PROTOBUF_NAMESPACE_ID::ServiceDescriptor const** file_level_service_descriptors_authentication_2eproto = nullptr;
 
 const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_authentication_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
@@ -155,6 +169,14 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_authentication_2eproto::offset
   ~0u,  // no _inlined_string_donated_
   PROTOBUF_FIELD_OFFSET(::AuthenticateWebFailure, request_id_),
   PROTOBUF_FIELD_OFFSET(::AuthenticateWebFailure, reason_),
+  ~0u,  // no _has_bits_
+  PROTOBUF_FIELD_OFFSET(::MessageAndCommand, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::MessageAndCommand, command_),
+  PROTOBUF_FIELD_OFFSET(::MessageAndCommand, messagedata_),
 };
 static const ::PROTOBUF_NAMESPACE_ID::internal::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   { 0, -1, -1, sizeof(::CreateAccountWeb)},
@@ -163,6 +185,7 @@ static const ::PROTOBUF_NAMESPACE_ID::internal::MigrationSchema schemas[] PROTOB
   { 25, -1, -1, sizeof(::AuthenticateWeb)},
   { 34, -1, -1, sizeof(::AuthenticateWebSuccess)},
   { 43, -1, -1, sizeof(::AuthenticateWebFailure)},
+  { 51, -1, -1, sizeof(::MessageAndCommand)},
 };
 
 static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] = {
@@ -172,6 +195,7 @@ static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] =
   reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::_AuthenticateWeb_default_instance_),
   reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::_AuthenticateWebSuccess_default_instance_),
   reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::_AuthenticateWebFailure_default_instance_),
+  reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::_MessageAndCommand_default_instance_),
 };
 
 const char descriptor_table_protodef_authentication_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
@@ -191,13 +215,19 @@ const char descriptor_table_protodef_authentication_2eproto[] PROTOBUF_SECTION_V
   "\t\"\232\001\n\026AuthenticateWebFailure\022\022\n\nrequest_"
   "id\030\001 \001(\003\022.\n\006reason\030\002 \001(\0162\036.AuthenticateW"
   "ebFailure.Reason\"<\n\006Reason\022\027\n\023INVALID_CR"
-  "EDENTIALS\020\000\022\031\n\025INTERNAL_SERVER_ERROR\020\001b\006"
-  "proto3"
+  "EDENTIALS\020\000\022\031\n\025INTERNAL_SERVER_ERROR\020\001\"\213"
+  "\002\n\021MessageAndCommand\022+\n\007command\030\001 \001(\0162\032."
+  "MessageAndCommand.Command\022\023\n\013messageData"
+  "\030\002 \001(\t\"\263\001\n\007Command\022\026\n\022CREATE_ACCOUNT_WEB"
+  "\020\000\022\036\n\032CREATE_ACCOUNT_WEB_SUCCESS\020\001\022\036\n\032CR"
+  "EATE_ACCOUNT_WEB_FAILURE\020\002\022\024\n\020AUTHENTICA"
+  "TE_WEB\020\003\022\034\n\030AUTHENTICATE_WEB_SUCCESS\020\004\022\034"
+  "\n\030AUTHENTICATE_WEB_FAILURE\020\005b\006proto3"
   ;
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_authentication_2eproto_once;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_authentication_2eproto = {
-  false, false, 686, descriptor_table_protodef_authentication_2eproto, "authentication.proto", 
-  &descriptor_table_authentication_2eproto_once, nullptr, 0, 6,
+  false, false, 956, descriptor_table_protodef_authentication_2eproto, "authentication.proto", 
+  &descriptor_table_authentication_2eproto_once, nullptr, 0, 7,
   schemas, file_default_instances, TableStruct_authentication_2eproto::offsets,
   file_level_metadata_authentication_2eproto, file_level_enum_descriptors_authentication_2eproto, file_level_service_descriptors_authentication_2eproto,
 };
@@ -250,6 +280,35 @@ constexpr AuthenticateWebFailure_Reason AuthenticateWebFailure::INTERNAL_SERVER_
 constexpr AuthenticateWebFailure_Reason AuthenticateWebFailure::Reason_MIN;
 constexpr AuthenticateWebFailure_Reason AuthenticateWebFailure::Reason_MAX;
 constexpr int AuthenticateWebFailure::Reason_ARRAYSIZE;
+#endif  // (__cplusplus < 201703) && (!defined(_MSC_VER) || _MSC_VER >= 1900)
+const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* MessageAndCommand_Command_descriptor() {
+  ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&descriptor_table_authentication_2eproto);
+  return file_level_enum_descriptors_authentication_2eproto[2];
+}
+bool MessageAndCommand_Command_IsValid(int value) {
+  switch (value) {
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+    case 5:
+      return true;
+    default:
+      return false;
+  }
+}
+
+#if (__cplusplus < 201703) && (!defined(_MSC_VER) || _MSC_VER >= 1900)
+constexpr MessageAndCommand_Command MessageAndCommand::CREATE_ACCOUNT_WEB;
+constexpr MessageAndCommand_Command MessageAndCommand::CREATE_ACCOUNT_WEB_SUCCESS;
+constexpr MessageAndCommand_Command MessageAndCommand::CREATE_ACCOUNT_WEB_FAILURE;
+constexpr MessageAndCommand_Command MessageAndCommand::AUTHENTICATE_WEB;
+constexpr MessageAndCommand_Command MessageAndCommand::AUTHENTICATE_WEB_SUCCESS;
+constexpr MessageAndCommand_Command MessageAndCommand::AUTHENTICATE_WEB_FAILURE;
+constexpr MessageAndCommand_Command MessageAndCommand::Command_MIN;
+constexpr MessageAndCommand_Command MessageAndCommand::Command_MAX;
+constexpr int MessageAndCommand::Command_ARRAYSIZE;
 #endif  // (__cplusplus < 201703) && (!defined(_MSC_VER) || _MSC_VER >= 1900)
 
 // ===================================================================
@@ -1683,6 +1742,232 @@ void AuthenticateWebFailure::InternalSwap(AuthenticateWebFailure* other) {
       file_level_metadata_authentication_2eproto[5]);
 }
 
+// ===================================================================
+
+class MessageAndCommand::_Internal {
+ public:
+};
+
+MessageAndCommand::MessageAndCommand(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor();
+  if (!is_message_owned) {
+    RegisterArenaDtor(arena);
+  }
+  // @@protoc_insertion_point(arena_constructor:MessageAndCommand)
+}
+MessageAndCommand::MessageAndCommand(const MessageAndCommand& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  messagedata_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  if (!from._internal_messagedata().empty()) {
+    messagedata_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, from._internal_messagedata(), 
+      GetArenaForAllocation());
+  }
+  command_ = from.command_;
+  // @@protoc_insertion_point(copy_constructor:MessageAndCommand)
+}
+
+void MessageAndCommand::SharedCtor() {
+messagedata_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+command_ = 0;
+}
+
+MessageAndCommand::~MessageAndCommand() {
+  // @@protoc_insertion_point(destructor:MessageAndCommand)
+  if (GetArenaForAllocation() != nullptr) return;
+  SharedDtor();
+  _internal_metadata_.Delete<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+inline void MessageAndCommand::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  messagedata_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+}
+
+void MessageAndCommand::ArenaDtor(void* object) {
+  MessageAndCommand* _this = reinterpret_cast< MessageAndCommand* >(object);
+  (void)_this;
+}
+void MessageAndCommand::RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena*) {
+}
+void MessageAndCommand::SetCachedSize(int size) const {
+  _cached_size_.Set(size);
+}
+
+void MessageAndCommand::Clear() {
+// @@protoc_insertion_point(message_clear_start:MessageAndCommand)
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  messagedata_.ClearToEmpty();
+  command_ = 0;
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* MessageAndCommand::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  while (!ctx->Done(&ptr)) {
+    ::PROTOBUF_NAMESPACE_ID::uint32 tag;
+    ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // .MessageAndCommand.Command command = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 8)) {
+          ::PROTOBUF_NAMESPACE_ID::uint64 val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+          _internal_set_command(static_cast<::MessageAndCommand_Command>(val));
+        } else
+          goto handle_unusual;
+        continue;
+      // string messageData = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 18)) {
+          auto str = _internal_mutable_messagedata();
+          ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "MessageAndCommand.messageData"));
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+::PROTOBUF_NAMESPACE_ID::uint8* MessageAndCommand::_InternalSerialize(
+    ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:MessageAndCommand)
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // .MessageAndCommand.Command command = 1;
+  if (this->_internal_command() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteEnumToArray(
+      1, this->_internal_command(), target);
+  }
+
+  // string messageData = 2;
+  if (!this->_internal_messagedata().empty()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_messagedata().data(), static_cast<int>(this->_internal_messagedata().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "MessageAndCommand.messageData");
+    target = stream->WriteStringMaybeAliased(
+        2, this->_internal_messagedata(), target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:MessageAndCommand)
+  return target;
+}
+
+size_t MessageAndCommand::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:MessageAndCommand)
+  size_t total_size = 0;
+
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  // string messageData = 2;
+  if (!this->_internal_messagedata().empty()) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_messagedata());
+  }
+
+  // .MessageAndCommand.Command command = 1;
+  if (this->_internal_command() != 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::EnumSize(this->_internal_command());
+  }
+
+  return MaybeComputeUnknownFieldsSize(total_size, &_cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData MessageAndCommand::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSizeCheck,
+    MessageAndCommand::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*MessageAndCommand::GetClassData() const { return &_class_data_; }
+
+void MessageAndCommand::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message* to,
+                      const ::PROTOBUF_NAMESPACE_ID::Message& from) {
+  static_cast<MessageAndCommand *>(to)->MergeFrom(
+      static_cast<const MessageAndCommand &>(from));
+}
+
+
+void MessageAndCommand::MergeFrom(const MessageAndCommand& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:MessageAndCommand)
+  GOOGLE_DCHECK_NE(&from, this);
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (!from._internal_messagedata().empty()) {
+    _internal_set_messagedata(from._internal_messagedata());
+  }
+  if (from._internal_command() != 0) {
+    _internal_set_command(from._internal_command());
+  }
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void MessageAndCommand::CopyFrom(const MessageAndCommand& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:MessageAndCommand)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool MessageAndCommand::IsInitialized() const {
+  return true;
+}
+
+void MessageAndCommand::InternalSwap(MessageAndCommand* other) {
+  using std::swap;
+  auto* lhs_arena = GetArenaForAllocation();
+  auto* rhs_arena = other->GetArenaForAllocation();
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+      &messagedata_, lhs_arena,
+      &other->messagedata_, rhs_arena
+  );
+  swap(command_, other->command_);
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata MessageAndCommand::GetMetadata() const {
+  return ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(
+      &descriptor_table_authentication_2eproto_getter, &descriptor_table_authentication_2eproto_once,
+      file_level_metadata_authentication_2eproto[6]);
+}
+
 // @@protoc_insertion_point(namespace_scope)
 PROTOBUF_NAMESPACE_OPEN
 template<> PROTOBUF_NOINLINE ::CreateAccountWeb* Arena::CreateMaybeMessage< ::CreateAccountWeb >(Arena* arena) {
@@ -1702,6 +1987,9 @@ template<> PROTOBUF_NOINLINE ::AuthenticateWebSuccess* Arena::CreateMaybeMessage
 }
 template<> PROTOBUF_NOINLINE ::AuthenticateWebFailure* Arena::CreateMaybeMessage< ::AuthenticateWebFailure >(Arena* arena) {
   return Arena::CreateMessageInternal< ::AuthenticateWebFailure >(arena);
+}
+template<> PROTOBUF_NOINLINE ::MessageAndCommand* Arena::CreateMaybeMessage< ::MessageAndCommand >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::MessageAndCommand >(arena);
 }
 PROTOBUF_NAMESPACE_CLOSE
 
