@@ -49,15 +49,54 @@ Server::~Server()
 
 	 SOCKET clientSocket = accept(serverSocket, (sockaddr*)&client, &clientSize);
 
+	 int lengthPrefix;
+	 int bytesReceived = recv(clientSocket, reinterpret_cast<char*>(&lengthPrefix), sizeof(int), 0);
+	 if (bytesReceived != sizeof(int))
+	 {
+		 // Handle error
+	 }
+	 else
+	 {
+		
+		 int expectedLength = ntohl(lengthPrefix);
+
+		 std::cout << "expectedLength length " << expectedLength << std::endl;
+
+		
+		 std::vector<uint8_t> receiveDataBuffer(expectedLength);
+		 bytesReceived = recv(clientSocket, reinterpret_cast<char*>(receiveDataBuffer.data()), expectedLength, 0);
+
+		 if (bytesReceived != expectedLength)
+		 {
+			 
+		 }
+		 else 
+		 {
+			 std::string receivedData(receiveDataBuffer.begin(), receiveDataBuffer.end());
+			
+			 CreateAccountWeb web;
+			 web.ParseFromString(receivedData);
+			 std::cout << "Received client's email =" << web.email() << std::endl;
+			 std::cout << "Received client's password =" << web.plaintext_password() << std::endl;
+		 }
+	 }
+	 
+
+
+	
+
 	 // Receive message from client
-	 char buf[4096];
-	 ZeroMemory(buf, sizeof(buf));
-	 recv(clientSocket, buf, sizeof(buf), 0);
-	 std::cout << "Received from client: " << buf << std::endl;
-    CreateAccountWeb createaccout;
-//	 createaccount.ParseFromString(buf);
-	// std::cout << "Account email = " << createaccount.email() << std::endl;
-	// std::cout << "request id = " << createaccount.request_id() << std::endl;
+	 char buf[4];
+	// Message received;
+	// ZeroMemory(buf, sizeof(buf));
+//	 recv(clientSocket, buf, sizeof(buf), 0);
+	
+
+
+	// std::cout << "Received from Message length2: " << received.messageLength << std::endl;
+	// received.messageLength = std::intto;
+
+	
 	 // Connect to Server2
 	
 	

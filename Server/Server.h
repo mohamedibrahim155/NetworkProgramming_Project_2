@@ -24,6 +24,8 @@
 #define DEFAULT_BUFLEN 512
 
 #include <../Shared/authentication.pb.h>
+
+
 class Server
 {
 public:

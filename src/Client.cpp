@@ -27,14 +27,25 @@ void Client::Initialize()
 
     CreateAccountWeb createWeb;
     createWeb.set_email("MohamedIbrahim@gmail.com");
-    createWeb.set_plaintext_password("asdada");
+    createWeb.set_plaintext_password("mohamed");
 
     std::string serializeCreateWeb;
 
     createWeb.SerializeToString(&serializeCreateWeb);
 
+   
+   
+    std::string message = serializeCreateWeb;
 
-    send(clientSocket, serializeCreateWeb.c_str(), strlen(serializeCreateWeb.c_str()) + 1, 0);
+    int messageLength = message.size();
+    int lengthToSend = htonl(messageLength);
+    std::vector<uint8_t> sendDataBuffer(sizeof(int) + message.size());
+    memcpy(sendDataBuffer.data(), &lengthToSend, sizeof(int));
+    memcpy(sendDataBuffer.data() + sizeof(int), message.data(), message.size());
+
+    // Send the entire buffer
+    send(clientSocket, reinterpret_cast<char*>(sendDataBuffer.data()), sendDataBuffer.size(), 0);
+
 
     // Receive a message from Server1
     char buf[4096];
