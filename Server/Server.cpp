@@ -17,7 +17,7 @@ Server::~Server()
 	 int intResult;
 	 serverSocket = INVALID_SOCKET;
 	// SOCKET serverSocket = socket(AF_INET, SOCK_STREAM, 0);
-	 //SOCKET server2Socket = socket(AF_INET, SOCK_STREAM, 0);
+	 SOCKET server2Socket = INVALID_SOCKET;
 	 struct addrinfo* result = NULL;
 	 struct addrinfo hints;
 	 intResult = WSAStartup(MAKEWORD(2, 2), &wsData);
@@ -77,7 +77,59 @@ Server::~Server()
 	}
 	printf(" Listen success in server \n");
 
+	//////////////////////////////////////////////////////////////////////////////////
+	//////////// CONNECTING THIS SERVER TO ANOTHER AUTHENTICATE SERVER
+	///////////////////////	//////////////////////////////////////////////////////
+	struct addrinfo* result2 = NULL, * ptr = NULL, hints2;
+	ZeroMemory(&hints2, sizeof(hints2));
+	hints2.ai_family = AF_INET;
+	hints2.ai_socktype = SOCK_STREAM;
+	hints2.ai_protocol = IPPROTO_TCP;
+	hints2.ai_flags = AI_PASSIVE;
+	intResult = getaddrinfo("localhost", "5001", &hints2, &result2);
+	if (intResult != 0)
+	{
+		printf("getaddrinfo failed with error: %d\n", intResult);
+		WSACleanup();
+		return;
+	}
+	printf("getaddrinfo success in server2 \n");
 
+
+
+	for (ptr = result2; ptr != NULL; ptr = ptr->ai_next)
+	{
+		server2Socket = socket(ptr->ai_family, ptr->ai_socktype,
+			ptr->ai_protocol);
+		if (server2Socket == INVALID_SOCKET)
+		{
+			printf("socket failed with error: %ld\n", WSAGetLastError());
+			WSACleanup();
+			return;
+		}
+
+
+		intResult = connect(server2Socket, ptr->ai_addr, (int)ptr->ai_addrlen);
+		if (intResult == SOCKET_ERROR)
+		{
+			std::cerr << "Can't connect to server!" << std::endl;
+			closesocket(server2Socket);
+			server2Socket = INVALID_SOCKET;
+			WSACleanup();
+			return;
+		}
+		break;
+	}
+	freeaddrinfo(result2);
+
+	if (server2Socket == INVALID_SOCKET)
+	{
+		printf("Unable to connect to authenticate server!\n");
+		WSACleanup();
+		return;
+	}
+
+	printf("connected to authenticate server Successfully from server1 \n");
 	 //sockaddr_in server2Hint;
 	 //server2Hint.sin_family = AF_INET;
 	 //server2Hint.sin_port = htons(54001); // Assuming Server2 is on a different port
@@ -222,7 +274,6 @@ void Server::ReceiveAndPrintIncomingMessage(SOCKET clientSocket)
 void Server::ReceiveAndPrintIncomingMessageOnSeparateThread(SOCKET clientSocket)
 {
     clientSockets.push_back(clientSocket);
-
     std::thread clientThread(&Server::ReceiveAndPrintIncomingMessage, this, clientSocket);
     clientThreads.push_back(std::move(clientThread));
 }

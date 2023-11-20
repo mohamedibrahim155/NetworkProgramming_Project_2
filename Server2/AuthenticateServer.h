@@ -21,7 +21,7 @@
 #include <cctype>
 #include <algorithm>
 #pragma comment(lib, "Ws2_32.lib")
-#define DEFAULT_PORT "27015"
+#define DEFAULT_PORT "5001"
 #define DEFAULT_BUFLEN 512
 
 #include "../Shared/authentication.pb.h"
@@ -32,7 +32,15 @@ public:
 	~AuthenticateServer();
 	void Initialize();
 
+	void AcceptClientConnections(SOCKET serverSocket);
+	void ServerClose();
+	void ReceiveAndPrintIncomingMessageOnSeparateThread(SOCKET clientSocket);
+	void ReceiveAndPrintIncomingMessage(SOCKET clientSocket);
+	void SendMessagestoClient(SOCKET clientSocket);
+
 private:
 	SOCKET serverSocket;
+	std::vector<SOCKET> clientSockets;
+	std::vector<std::thread> clientThreads;
 };
 
