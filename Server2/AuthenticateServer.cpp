@@ -170,9 +170,25 @@ void AuthenticateServer::ReceiveAndPrintIncomingMessage(SOCKET server1Socket)
 				messageAndCommand.ParseFromString(receivedData);
 				CreateAccountWeb CreatewebDeserializer;
 				AuthenticateWeb AuthenticateWebDeserializer;
-				CreateAccountWebSuccess succes;
+
+
+				CreateAccountWebSuccess CreateAccountSuccess;
+				CreateAccountWebFailure CreateAccountFailure;
+
+				AuthenticateWebSuccess AuthenticateSuccess;
+				AuthenticateWebFailure AuthenticateFailure;
+
+
+				int userId;
+				std::string salt;
+				std::string hashPassword;
+				std::string creationDate;
 				switch (messageAndCommand.command())
 				{
+
+#pragma region REGISTER
+
+
 
 				case MessageAndCommand_Command_CREATE_ACCOUNT_WEB:
 					CreatewebDeserializer.ParseFromString(messageAndCommand.messagedata());
@@ -180,16 +196,52 @@ void AuthenticateServer::ReceiveAndPrintIncomingMessage(SOCKET server1Socket)
 					std::cout << "PASSWORD : " << CreatewebDeserializer.plaintext_password() << std::endl;
 					std::cout << "Request id : " << CreatewebDeserializer.request_id() << std::endl;
 
-			
-					succes.set_request_id(CreatewebDeserializer.request_id());
-					succes.set_user_id(50);
-					succes.SerializeToString(&dataSerializer);
+					int result;
 
-					messageAndCommand.set_command(MessageAndCommand_Command_CREATE_ACCOUNT_WEB_SUCCESS);
-					messageAndCommand.set_messagedata(dataSerializer);
+					 salt = "chuma";
 
-					SendMessagestoServer1(messageAndCommand,server1Socket);
+					 hashPassword = "mycustomHashpassword";
+
+					result = mysql->AddAccount(CreatewebDeserializer.email().c_str(), salt.c_str(), hashPassword.c_str());
+					if (result == 1)
+					{
+						result = mysql->AddNewUser(userId);
+						result = mysql->UpdateUserID(CreatewebDeserializer.email().c_str(), userId);
+
+						CreateAccountSuccess.set_request_id(CreatewebDeserializer.request_id());
+						CreateAccountSuccess.set_user_id(userId);
+
+						CreateAccountSuccess.SerializeToString(&dataSerializer);
+
+						messageAndCommand.set_command(MessageAndCommand_Command_CREATE_ACCOUNT_WEB_SUCCESS);
+						messageAndCommand.set_messagedata(dataSerializer);
+
+						SendMessagestoServer1(messageAndCommand, server1Socket);
+					}
+					else
+					{
+						CreateAccountFailure.set_request_id(CreatewebDeserializer.request_id());
+						if (result == 0)
+						{
+							CreateAccountFailure.set_reason(CreateAccountWebFailure_Reason_ACCOUNT_ALREADY_EXISTS);
+						}
+						else if(result == -1)
+						{
+
+							CreateAccountFailure.set_reason(CreateAccountWebFailure_Reason_INTERNAL_SERVER_ERROR);
+						}
+
+						CreateAccountFailure.SerializeToString(&dataSerializer);
+
+						messageAndCommand.set_command(MessageAndCommand_Command_CREATE_ACCOUNT_WEB_FAILURE);
+						messageAndCommand.set_messagedata(dataSerializer);
+
+						SendMessagestoServer1(messageAndCommand, server1Socket);
+					}
+					
+
 					break;
+#pragma endregion	
 				case MessageAndCommand_Command_CREATE_ACCOUNT_WEB_SUCCESS:
 					break;
 
@@ -202,6 +254,49 @@ void AuthenticateServer::ReceiveAndPrintIncomingMessage(SOCKET server1Socket)
 					AuthenticateWebDeserializer.ParseFromString(messageAndCommand.messagedata());
 					std::cout << "EMAIL : " << AuthenticateWebDeserializer.email() << std::endl;
 					std::cout << "PASSWORD : " << AuthenticateWebDeserializer.plaintext_password() << std::endl;
+					std::cout << "Request id : " << AuthenticateWebDeserializer.request_id() << std::endl;
+					userId = 0;
+					creationDate = "";
+					result = mysql->AuthenticateAccount(AuthenticateWebDeserializer.email().c_str(), AuthenticateWebDeserializer.plaintext_password().c_str(), userId);
+					if (result ==1)
+					{
+						mysql->UpdateLastLogin(userId, creationDate);
+
+						AuthenticateSuccess.set_request_id(AuthenticateWebDeserializer.request_id());
+						AuthenticateSuccess.set_user_id(userId);
+						AuthenticateSuccess.set_creation_date(creationDate);
+
+						AuthenticateSuccess.SerializeToString(&dataSerializer);
+
+						messageAndCommand.set_command(MessageAndCommand_Command_AUTHENTICATE_WEB_SUCCESS);
+						messageAndCommand.set_messagedata(dataSerializer);
+
+						SendMessagestoServer1(messageAndCommand, server1Socket);
+
+					}
+					else
+					{
+						AuthenticateFailure.set_request_id(AuthenticateWebDeserializer.request_id());
+
+						if (result == 2 || result == 0)
+						{
+							AuthenticateFailure.set_reason(AuthenticateWebFailure_Reason_INVALID_CREDENTIALS);
+						}
+						else if (result == -1)
+						{
+							AuthenticateFailure.set_reason(AuthenticateWebFailure_Reason_INTERNAL_SERVER_ERROR);
+						}
+
+						AuthenticateFailure.SerializeToString(&dataSerializer);
+
+						messageAndCommand.set_command(MessageAndCommand_Command_AUTHENTICATE_WEB_FAILURE);
+						messageAndCommand.set_messagedata(dataSerializer);
+
+						SendMessagestoServer1(messageAndCommand, server1Socket);
+
+					}
+
+
 					break;
 				case MessageAndCommand_Command_AUTHENTICATE_WEB_FAILURE:
 					break;
@@ -251,4 +346,14 @@ void AuthenticateServer::SendMessagestoServer1(MessageAndCommand messagetoSend, 
 	memcpy(sendDataBuffer.data() + sizeof(int), message.data(), message.size());
 
 	send(server1Socket, reinterpret_cast<char*>(sendDataBuffer.data()), sendDataBuffer.size(), 0);
+}
+
+void AuthenticateServer::SetSQLUtil(MySQLUtil* mysql)
+{
+	this->mysql = mysql;
+	if (mysql!=nullptr)
+	{
+		std::cout << "SQL not null" << std::endl;
+		
+	}
 }

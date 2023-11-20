@@ -28,17 +28,12 @@ int main()
 		"UPDATE gdp.user SET last_login = NOW() WHERE id = ?");
 
 	database.AddPreparedStatement(StatementType::GET_CREATION_DATE,
-		"SELECT creation_date FROM gdp.user WHERE id = 1");
+		"SELECT creation_date FROM gdp.user WHERE id = ?");
 
-	sql::ResultSet* resultUser =	database.GetPreparedStatement(StatementType::GET_CREATION_DATE)->executeQuery();
-	int userID;
-	while (resultUser->next())
-	{
-		sql::SQLString creationDate = resultUser->getString(1);
-		std::cout << "UserID : " << creationDate << std::endl;
-	}
-	/*AuthenticateServer server;
+	AuthenticateServer server;
 
-	server.Initialize();*/
+	server.SetSQLUtil(&database);
+
+	server.Initialize();
 	return 0;
 }

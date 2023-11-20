@@ -143,9 +143,18 @@ void Client::ReceiveMessages(SOCKET sock)
 
 				MessageAndCommand messageAndCommand;
 				messageAndCommand.ParseFromString(receivedData);
+
 				CreateAccountWeb CreatewebDeserializer;
 				AuthenticateWeb AuthenticateWebDeserializer;
+
+
 				CreateAccountWebSuccess CreateAccountWebSuccess;
+				CreateAccountWebFailure CreateAccountWebFailure;
+
+
+				AuthenticateWebSuccess AuthenticateWebSuccess;
+				AuthenticateWebFailure AuthenticateWebFailure;
+
 				switch (messageAndCommand.command())
 				{
 
@@ -155,12 +164,27 @@ void Client::ReceiveMessages(SOCKET sock)
 					std::cout << "PASSWORD : " << CreatewebDeserializer.plaintext_password() << std::endl;
 					break;
 				case MessageAndCommand_Command_CREATE_ACCOUNT_WEB_SUCCESS:
-					CreateAccountWebSuccess.ParseFromString(messageAndCommand.messagedata());
-					std::cout << "REQUEST ID : " << CreateAccountWebSuccess.request_id() << std::endl;
-					std::cout << "USER ID : " << CreateAccountWebSuccess.user_id() << std::endl;
+
+					std::cout << "ACCOUNT REGISTERED SUCCESSFULLY" << std::endl;
 					break;
 
 				case MessageAndCommand_Command_CREATE_ACCOUNT_WEB_FAILURE:
+					CreateAccountWebFailure.ParseFromString(messageAndCommand.messagedata());
+
+					std::cout << " FAILED TO REGISTER :";
+					switch (CreateAccountWebFailure.reason())
+					{
+					case CreateAccountWebFailure_Reason_ACCOUNT_ALREADY_EXISTS:
+						std::cout << " ACCOUNT ALREADY EXISTS";
+						break;
+					case CreateAccountWebFailure_Reason_INVALID_PASSWORD:
+						std::cout << " INVALID PASSWORD";
+						break;
+					case CreateAccountWebFailure_Reason_INTERNAL_SERVER_ERROR:
+						std::cout << " INTERNAL SERVER ERROR";
+						break;
+					}
+					std::cout << "CREATED ACCOUNT SUCCESFULLY" << std::endl;
 					break;
 
 
@@ -171,8 +195,25 @@ void Client::ReceiveMessages(SOCKET sock)
 					std::cout << "PASSWORD : " << AuthenticateWebDeserializer.plaintext_password() << std::endl;
 					break;
 				case MessageAndCommand_Command_AUTHENTICATE_WEB_FAILURE:
+				
+
+					AuthenticateWebFailure.ParseFromString(messageAndCommand.messagedata());
+					std::cout << " ACCOUNT AUTHENTICATED FAILED :";
+
+					switch (AuthenticateWebFailure.reason())
+					{
+					case AuthenticateWebFailure_Reason_INTERNAL_SERVER_ERROR:
+						std::cout << "INTERNAL SERVER ERROR";
+						break;
+
+					case AuthenticateWebFailure_Reason_INVALID_CREDENTIALS:
+						std::cout << "INVALID CREDENTIALS";
+						break;
+					}
+
 					break;
 				case MessageAndCommand_Command_AUTHENTICATE_WEB_SUCCESS:
+					std::cout << " ACCOUNT AUTHENTICATE SUCCESS" << std::endl;
 					break;
 
 				}
@@ -211,7 +252,7 @@ void Client::SendToServer(SOCKET sock)
 			messageAndCommand.SerializeToString(&serializeString);
 
 		}
-		else
+		else if (userInput == "AUTHENTICATE")
 		{
 			std::string AuthenticateSerializer;
 			AuthenticateWeb authenticate;

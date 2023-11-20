@@ -25,6 +25,7 @@
 #define DEFAULT_BUFLEN 512
 
 #include "../Shared/authentication.pb.h"
+#include"MySQLUtil.h"
 class AuthenticateServer
 {
 public:
@@ -38,9 +39,11 @@ public:
 	void ReceiveAndPrintIncomingMessage(SOCKET clientSocket);
 	void SendMessagestoServer1(MessageAndCommand messagetoSend,SOCKET server1Scoket);
 
+	void SetSQLUtil(MySQLUtil* mysql);
 private:
 	SOCKET serverSocket;
 	std::vector<SOCKET> clientSockets;
 	std::vector<std::thread> clientThreads;
+	MySQLUtil* mysql;
 };
 

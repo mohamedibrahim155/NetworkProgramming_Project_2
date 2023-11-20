@@ -202,18 +202,37 @@ void Server::ReceiveMessagesFromClient(Client* client)
 		if (bytesReceived != sizeof(int))
 		{
 			// Handle error
+			break;
 		}
 		else
 		{
 
 			int expectedLength = ntohl(lengthPrefix);
+			int error;
 			std::vector<uint8_t> receiveDataBuffer(expectedLength);
 			bytesReceived = recv(client->clientSocket, reinterpret_cast<char*>(receiveDataBuffer.data()), expectedLength, 0);
 
+			if (bytesReceived == SOCKET_ERROR)
+			{
+				error = WSAGetLastError();
+
+				if (error == WSAECONNRESET || error == ECONNRESET)
+				{
+				
+					closesocket(client->clientSocket);
+
+					clientList.erase(std::remove(clientList.begin(), clientList.end(), client), clientList.end());
+				}
+				else
+				{
+					std::cout << "Server : Receiving message from Client failed with error : " << WSAGetLastError() << std::endl;
+				}
+				break;
+			}
 			if (bytesReceived != expectedLength)
 			{
-				closesocket(client->clientSocket);
-				clientList.erase(std::remove(clientList.begin(), clientList.end(), client), clientList.end());
+				//closesocket(client->clientSocket);
+				//clientList.erase(std::remove(clientList.begin(), clientList.end(), client), clientList.end());
 				break;
 			}
 			else
@@ -239,6 +258,7 @@ void Server::ReceiveMessagesFromClient(Client* client)
 					messageAndCommand.set_messagedata(commandDesirializer);
 
 					client->requestId = clientRequestId;
+					std::cout << "client->requestId : " << client->requestId << std::endl;
 					SendMessageToAuthenticateServer(messageAndCommand, server2Socket);
 
 					clientRequestId++;
@@ -254,6 +274,7 @@ void Server::ReceiveMessagesFromClient(Client* client)
 					messageAndCommand.set_messagedata(commandDesirializer);
 
 					client->requestId = clientRequestId;
+					std::cout << "client->requestId : " << client->requestId << std::endl;
 					SendMessageToAuthenticateServer(messageAndCommand, server2Socket);
 					clientRequestId++;
 					break;
@@ -404,19 +425,22 @@ void Server::ReceiveMessagesFromAuthenticateServer(SOCKET server2)
 
 
 
-				case MessageAndCommand_Command_AUTHENTICATE_WEB_FAILURE:
+				case MessageAndCommand_Command_AUTHENTICATE_WEB_SUCCESS:
 
 					AuthenticateWebSuccess.ParseFromString(messageAndCommand.messagedata());
 					std::cout << "SUCCES AUTHENTICATE - Request id: " << AuthenticateWebSuccess.request_id() << std::endl;
 					std::cout << "SUCCES AUTHENTICATE - User id : " << AuthenticateWebSuccess.user_id() << std::endl;
-					SendMessagestoClient(messageAndCommand, GetClientWithRequestID(CreateAccountWebFailure.request_id()));
+					SendMessagestoClient(messageAndCommand, GetClientWithRequestID(AuthenticateWebSuccess.request_id()));
 					break;
-				case MessageAndCommand_Command_AUTHENTICATE_WEB_SUCCESS:
+				case MessageAndCommand_Command_AUTHENTICATE_WEB_FAILURE:
 
 					AuthenticateWebFailure.ParseFromString(messageAndCommand.messagedata());
 
 					std::cout << "FAILURE AUTHENTICATE  - Request ID: " << AuthenticateWebFailure.request_id() << std::endl;
 					std::cout << "FAILURE AUTHENTICATE -  Reason: " << AuthenticateWebFailure.reason() << std::endl;
+
+					SendMessagestoClient(messageAndCommand, GetClientWithRequestID(AuthenticateWebFailure.request_id()));
+
 					break;
 
 				}
