@@ -21,10 +21,22 @@
     <ClCompile Include="AuthenticateServer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\Shared\authentication.pb.cc">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MySQLUtil.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Shared\authentication.pb.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
     <ClInclude Include="AuthenticateServer.h">
-      <Filter>Source Files</Filter>
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MySQLUtil.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
