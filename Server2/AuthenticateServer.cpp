@@ -129,23 +129,23 @@ void AuthenticateServer::AcceptClientConnections(SOCKET serverSocket)
 	}
 }
 
-void AuthenticateServer::ReceiveAndPrintIncomingMessageOnSeparateThread(SOCKET clientSocket)
+void AuthenticateServer::ReceiveAndPrintIncomingMessageOnSeparateThread(SOCKET server1Socket)
 {
-	clientSockets.push_back(clientSocket);
+	clientSockets.push_back(server1Socket);
 
-	std::thread clientThread(&AuthenticateServer::ReceiveAndPrintIncomingMessage, this, clientSocket);
+	std::thread clientThread(&AuthenticateServer::ReceiveAndPrintIncomingMessage, this, server1Socket);
 	clientThreads.push_back(std::move(clientThread));
 }
 
 
-void AuthenticateServer::ReceiveAndPrintIncomingMessage(SOCKET clientSocket)
+void AuthenticateServer::ReceiveAndPrintIncomingMessage(SOCKET server1Socket)
 {
 
 	while (true)
 	{
 
 		int lengthPrefix;
-		int bytesReceived = recv(clientSocket, reinterpret_cast<char*>(&lengthPrefix), sizeof(int), 0);
+		int bytesReceived = recv(server1Socket, reinterpret_cast<char*>(&lengthPrefix), sizeof(int), 0);
 		if (bytesReceived != sizeof(int))
 		{
 			// Handle error
@@ -155,7 +155,7 @@ void AuthenticateServer::ReceiveAndPrintIncomingMessage(SOCKET clientSocket)
 
 			int expectedLength = ntohl(lengthPrefix);
 			std::vector<uint8_t> receiveDataBuffer(expectedLength);
-			bytesReceived = recv(clientSocket, reinterpret_cast<char*>(receiveDataBuffer.data()), expectedLength, 0);
+			bytesReceived = recv(server1Socket, reinterpret_cast<char*>(receiveDataBuffer.data()), expectedLength, 0);
 
 			if (bytesReceived != expectedLength)
 			{
@@ -165,10 +165,12 @@ void AuthenticateServer::ReceiveAndPrintIncomingMessage(SOCKET clientSocket)
 			{
 				std::string receivedData(receiveDataBuffer.begin(), receiveDataBuffer.end());
 
+				std::string dataSerializer;
 				MessageAndCommand messageAndCommand;
 				messageAndCommand.ParseFromString(receivedData);
 				CreateAccountWeb CreatewebDeserializer;
 				AuthenticateWeb AuthenticateWebDeserializer;
+				CreateAccountWebSuccess succes;
 				switch (messageAndCommand.command())
 				{
 
@@ -176,6 +178,17 @@ void AuthenticateServer::ReceiveAndPrintIncomingMessage(SOCKET clientSocket)
 					CreatewebDeserializer.ParseFromString(messageAndCommand.messagedata());
 					std::cout << "EMAIL : " << CreatewebDeserializer.email() << std::endl;
 					std::cout << "PASSWORD : " << CreatewebDeserializer.plaintext_password() << std::endl;
+					std::cout << "Request id : " << CreatewebDeserializer.request_id() << std::endl;
+
+			
+					succes.set_request_id(CreatewebDeserializer.request_id());
+					succes.set_user_id(50);
+					succes.SerializeToString(&dataSerializer);
+
+					messageAndCommand.set_command(MessageAndCommand_Command_CREATE_ACCOUNT_WEB_SUCCESS);
+					messageAndCommand.set_messagedata(dataSerializer);
+
+					SendMessagestoServer1(messageAndCommand,server1Socket);
 					break;
 				case MessageAndCommand_Command_CREATE_ACCOUNT_WEB_SUCCESS:
 					break;
@@ -198,7 +211,7 @@ void AuthenticateServer::ReceiveAndPrintIncomingMessage(SOCKET clientSocket)
 				}
 
 
-				SendMessagestoClient(clientSocket);
+				
 			}
 		}
 
@@ -217,24 +230,14 @@ void AuthenticateServer::ReceiveAndPrintIncomingMessage(SOCKET clientSocket)
 		 //std::cout << "Received from Server2: " << buf << std::endl;
 		 ////////////////////////////////////////////////////////////////////////////////////////////
 	}
-	closesocket(clientSocket);
+	closesocket(server1Socket);
 }
 
-void AuthenticateServer::SendMessagestoClient(SOCKET clientSocket)
+void AuthenticateServer::SendMessagestoServer1(MessageAndCommand messagetoSend, SOCKET server1Socket)
 {
-	MessageAndCommand messageAndCommand;
+	
 	std::string serializeString;
-
-
-	std::string  CreateAccountWebSuccessserilizer;
-	CreateAccountWebSuccess success;
-	success.set_user_id(1);
-	success.set_request_id(2);
-	success.SerializeToString(&CreateAccountWebSuccessserilizer);
-
-	messageAndCommand.set_command(MessageAndCommand_Command_CREATE_ACCOUNT_WEB_SUCCESS);
-	messageAndCommand.set_messagedata(CreateAccountWebSuccessserilizer);
-	messageAndCommand.SerializeToString(&serializeString);
+	messagetoSend.SerializeToString(&serializeString);
 
 
 
@@ -247,5 +250,5 @@ void AuthenticateServer::SendMessagestoClient(SOCKET clientSocket)
 	memcpy(sendDataBuffer.data(), &lengthToSend, sizeof(int));
 	memcpy(sendDataBuffer.data() + sizeof(int), message.data(), message.size());
 
-	send(clientSocket, reinterpret_cast<char*>(sendDataBuffer.data()), sendDataBuffer.size(), 0);
+	send(server1Socket, reinterpret_cast<char*>(sendDataBuffer.data()), sendDataBuffer.size(), 0);
 }

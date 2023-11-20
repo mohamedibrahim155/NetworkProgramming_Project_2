@@ -17,7 +17,7 @@ Server::~Server()
 	 int intResult;
 	 serverSocket = INVALID_SOCKET;
 	// SOCKET serverSocket = socket(AF_INET, SOCK_STREAM, 0);
-	 SOCKET server2Socket = INVALID_SOCKET;
+	  server2Socket = INVALID_SOCKET;
 	 struct addrinfo* result = NULL;
 	 struct addrinfo hints;
 	 intResult = WSAStartup(MAKEWORD(2, 2), &wsData);
@@ -130,10 +130,9 @@ Server::~Server()
 	}
 
 	printf("connected to authenticate server Successfully from server1 \n");
-	 //sockaddr_in server2Hint;
-	 //server2Hint.sin_family = AF_INET;
-	 //server2Hint.sin_port = htons(54001); // Assuming Server2 is on a different port
-	 //inet_pton(AF_INET, "127.0.0.1", &server2Hint.sin_addr);
+
+	std::thread receiveThread(&Server::ReceiveMessagesFromAuthenticateServer, this, server2Socket);
+
 	AcceptClientConnections(serverSocket);
 
 
@@ -176,11 +175,14 @@ void Server::AcceptClientConnections(SOCKET serverSocket)
 	{
 		sockaddr_in client;
 		int clientSize = sizeof(client);
+		
 
 		SOCKET clientSocket = accept(serverSocket, (sockaddr*)&client, &clientSize);
 		std::cout << "NEW CLIENT JOINED >> " << std::endl;
+
 		if (clientSocket == INVALID_SOCKET)
 		{
+
 			std::cerr << "Invalid client socket." << std::endl;
 			continue;
 		}
@@ -189,14 +191,14 @@ void Server::AcceptClientConnections(SOCKET serverSocket)
 	}
 }
 
-void Server::ReceiveAndPrintIncomingMessage(SOCKET clientSocket)
+void Server::ReceiveMessagesFromClient(Client* client)
 {
 	
 	while (true)
 	{
 
 		int lengthPrefix;
-		int bytesReceived = recv(clientSocket, reinterpret_cast<char*>(&lengthPrefix), sizeof(int), 0);
+		int bytesReceived = recv(client->clientSocket, reinterpret_cast<char*>(&lengthPrefix), sizeof(int), 0);
 		if (bytesReceived != sizeof(int))
 		{
 			// Handle error
@@ -206,16 +208,19 @@ void Server::ReceiveAndPrintIncomingMessage(SOCKET clientSocket)
 
 			int expectedLength = ntohl(lengthPrefix);
 			std::vector<uint8_t> receiveDataBuffer(expectedLength);
-			bytesReceived = recv(clientSocket, reinterpret_cast<char*>(receiveDataBuffer.data()), expectedLength, 0);
+			bytesReceived = recv(client->clientSocket, reinterpret_cast<char*>(receiveDataBuffer.data()), expectedLength, 0);
 
 			if (bytesReceived != expectedLength)
 			{
-
+				closesocket(client->clientSocket);
+				clientList.erase(std::remove(clientList.begin(), clientList.end(), client), clientList.end());
+				break;
 			}
 			else
 			{
 				std::string receivedData(receiveDataBuffer.begin(), receiveDataBuffer.end());
-
+				std::string  commandDesirializer;
+				std::string messageCommandSerializer;
 				MessageAndCommand messageAndCommand;
 				messageAndCommand.ParseFromString(receivedData);
 				CreateAccountWeb CreatewebDeserializer;
@@ -224,32 +229,39 @@ void Server::ReceiveAndPrintIncomingMessage(SOCKET clientSocket)
 				{
 
 				case MessageAndCommand_Command_CREATE_ACCOUNT_WEB:
+					
 					CreatewebDeserializer.ParseFromString(messageAndCommand.messagedata());
 					std::cout << "EMAIL : " << CreatewebDeserializer.email() << std::endl;
 					std::cout << "PASSWORD : " << CreatewebDeserializer.plaintext_password() << std::endl;
-					break;
-				case MessageAndCommand_Command_CREATE_ACCOUNT_WEB_SUCCESS:
-					break;
 
-				case MessageAndCommand_Command_CREATE_ACCOUNT_WEB_FAILURE:
+					CreatewebDeserializer.set_request_id(clientRequestId);
+					CreatewebDeserializer.SerializeToString(&commandDesirializer);
+					messageAndCommand.set_messagedata(commandDesirializer);
+
+					client->requestId = clientRequestId;
+					SendMessageToAuthenticateServer(messageAndCommand, server2Socket);
+
+					clientRequestId++;
 					break;
-
-
+				
 
 				case MessageAndCommand_Command_AUTHENTICATE_WEB:
 					AuthenticateWebDeserializer.ParseFromString(messageAndCommand.messagedata());
 					std::cout << "EMAIL : " << AuthenticateWebDeserializer.email() << std::endl;
 					std::cout << "PASSWORD : " << AuthenticateWebDeserializer.plaintext_password() << std::endl;
-					break;
-				case MessageAndCommand_Command_AUTHENTICATE_WEB_FAILURE:
-					break;
-				case MessageAndCommand_Command_AUTHENTICATE_WEB_SUCCESS:
+					AuthenticateWebDeserializer.set_request_id(clientRequestId);
+					AuthenticateWebDeserializer.SerializeToString(&commandDesirializer);
+					messageAndCommand.set_messagedata(commandDesirializer);
+
+					client->requestId = clientRequestId;
+					SendMessageToAuthenticateServer(messageAndCommand, server2Socket);
+					clientRequestId++;
 					break;
 
 				}
 
 
-				SendMessagestoClient(clientSocket);
+				
 			}
 		}
 
@@ -268,35 +280,30 @@ void Server::ReceiveAndPrintIncomingMessage(SOCKET clientSocket)
 		 //std::cout << "Received from Server2: " << buf << std::endl;
 		 ////////////////////////////////////////////////////////////////////////////////////////////
 	}
-	closesocket(clientSocket);
+	closesocket(client->clientSocket);
 }
 
 void Server::ReceiveAndPrintIncomingMessageOnSeparateThread(SOCKET clientSocket)
 {
+	Client* newClient = new Client();
+	newClient->clientSocket= clientSocket;
+	clientList.push_back(newClient);
+
     clientSockets.push_back(clientSocket);
-    std::thread clientThread(&Server::ReceiveAndPrintIncomingMessage, this, clientSocket);
+    std::thread clientThread(&Server::ReceiveMessagesFromClient, this, newClient);
     clientThreads.push_back(std::move(clientThread));
 }
 
-void Server::SendMessagestoClient(SOCKET clientSocket)
+void Server::SendMessagestoClient(MessageAndCommand messagetobeSend, Client* client)
 {
-	MessageAndCommand messageAndCommand;
+	if (client == nullptr)
+	{
+		std::cout << " Client disconnected .." << std::endl;
+		return;
+	}
 	std::string serializeString;
 
-
-	std::string  CreateAccountWebSuccessserilizer;
-	CreateAccountWebSuccess success;
-	success.set_user_id(1);
-	success.set_request_id(2);
-	success.SerializeToString(&CreateAccountWebSuccessserilizer);
-
-	messageAndCommand.set_command(MessageAndCommand_Command_CREATE_ACCOUNT_WEB_SUCCESS);
-	messageAndCommand.set_messagedata(CreateAccountWebSuccessserilizer);
-	messageAndCommand.SerializeToString(&serializeString);
-
-
-
-
+	messagetobeSend.SerializeToString(&serializeString);
 
 	std::string message = serializeString;
 	int messageLength = message.size();
@@ -304,8 +311,120 @@ void Server::SendMessagestoClient(SOCKET clientSocket)
 	std::vector<uint8_t> sendDataBuffer(sizeof(int) + message.size());
 	memcpy(sendDataBuffer.data(), &lengthToSend, sizeof(int));
 	memcpy(sendDataBuffer.data() + sizeof(int), message.data(), message.size());
+	
+	send(client->clientSocket, reinterpret_cast<char*>(sendDataBuffer.data()), sendDataBuffer.size(), 0);
 
-	 send(clientSocket, reinterpret_cast<char*>(sendDataBuffer.data()), sendDataBuffer.size(), 0);
+}
+
+void Server::SendMessageToAuthenticateServer(MessageAndCommand messagetobeSend, SOCKET server2Scoket)
+{
+	std::string serializeString;
+
+	messagetobeSend.SerializeToString(&serializeString);
+
+	std::string message = serializeString;
+	int messageLength = message.size();
+	int lengthToSend = htonl(messageLength);
+	std::vector<uint8_t> sendDataBuffer(sizeof(int) + message.size());
+	memcpy(sendDataBuffer.data(), &lengthToSend, sizeof(int));
+	memcpy(sendDataBuffer.data() + sizeof(int), message.data(), message.size());
+	send(server2Scoket, reinterpret_cast<char*>(sendDataBuffer.data()), sendDataBuffer.size(), 0);
+}
+
+Client* Server::GetClientWithRequestID(int requestId)
+{
+	for (Client* client : clientList)
+	{
+		if (client->requestId == requestId)
+			return client;
+	}
+	return nullptr;
+}
+
+
+void Server::ReceiveMessagesFromAuthenticateServer(SOCKET server2)
+{
+	int lengthPrefix;
+	while (true)
+	{
+
+		int bytesReceived = recv(server2, reinterpret_cast<char*>(&lengthPrefix), sizeof(int), 0);
+		if (bytesReceived != sizeof(int))
+		{
+			break;
+		}
+		else
+		{
+
+			int expectedLength = ntohl(lengthPrefix);
+			std::vector<uint8_t> receiveDataBuffer(expectedLength);
+			bytesReceived = recv(server2, reinterpret_cast<char*>(receiveDataBuffer.data()), expectedLength, 0);
+
+			if (bytesReceived != expectedLength)
+			{
+				break;
+			}
+			else
+			{
+				std::string receivedData(receiveDataBuffer.begin(), receiveDataBuffer.end());
+
+				MessageAndCommand messageAndCommand;
+				messageAndCommand.ParseFromString(receivedData);
+
+				CreateAccountWebSuccess CreateAccountWebSuccess;
+				CreateAccountWebFailure CreateAccountWebFailure;
+
+
+				AuthenticateWebSuccess AuthenticateWebSuccess;
+				AuthenticateWebFailure AuthenticateWebFailure;
+				//////////////THERE WONT BE CREATE AND AUTHENTICATE 
+				switch (messageAndCommand.command())
+				{
+				
+				case MessageAndCommand_Command_CREATE_ACCOUNT_WEB_SUCCESS:
+					CreateAccountWebSuccess.ParseFromString(messageAndCommand.messagedata());
+					std::cout << "SUCCESS CREATION - Request ID : " << CreateAccountWebSuccess.request_id() << std::endl;
+					std::cout << "SUCCES CREATION - User id : " << CreateAccountWebSuccess.user_id() << std::endl;
+
+
+					//////// HAVE to SEND TO CLIENTS
+					SendMessagestoClient(messageAndCommand, GetClientWithRequestID(CreateAccountWebSuccess.request_id()));
+
+					break;
+
+				case MessageAndCommand_Command_CREATE_ACCOUNT_WEB_FAILURE:
+
+					CreateAccountWebFailure.ParseFromString(messageAndCommand.messagedata());
+					std::cout << "FAILURE CREATION  - Request ID: " << CreateAccountWebFailure.request_id() << std::endl;
+					std::cout << "FAILURE CREATION -  Reason: " << CreateAccountWebFailure.reason() << std::endl;
+
+					SendMessagestoClient(messageAndCommand, GetClientWithRequestID(CreateAccountWebFailure.request_id()));
+
+					break;
+
+
+
+				case MessageAndCommand_Command_AUTHENTICATE_WEB_FAILURE:
+
+					AuthenticateWebSuccess.ParseFromString(messageAndCommand.messagedata());
+					std::cout << "SUCCES AUTHENTICATE - Request id: " << AuthenticateWebSuccess.request_id() << std::endl;
+					std::cout << "SUCCES AUTHENTICATE - User id : " << AuthenticateWebSuccess.user_id() << std::endl;
+					SendMessagestoClient(messageAndCommand, GetClientWithRequestID(CreateAccountWebFailure.request_id()));
+					break;
+				case MessageAndCommand_Command_AUTHENTICATE_WEB_SUCCESS:
+
+					AuthenticateWebFailure.ParseFromString(messageAndCommand.messagedata());
+
+					std::cout << "FAILURE AUTHENTICATE  - Request ID: " << AuthenticateWebFailure.request_id() << std::endl;
+					std::cout << "FAILURE AUTHENTICATE -  Reason: " << AuthenticateWebFailure.reason() << std::endl;
+					break;
+
+				}
+
+			}
+		}
+
+	}
 }
 
 

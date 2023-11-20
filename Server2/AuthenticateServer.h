@@ -36,7 +36,7 @@ public:
 	void ServerClose();
 	void ReceiveAndPrintIncomingMessageOnSeparateThread(SOCKET clientSocket);
 	void ReceiveAndPrintIncomingMessage(SOCKET clientSocket);
-	void SendMessagestoClient(SOCKET clientSocket);
+	void SendMessagestoServer1(MessageAndCommand messagetoSend,SOCKET server1Scoket);
 
 private:
 	SOCKET serverSocket;

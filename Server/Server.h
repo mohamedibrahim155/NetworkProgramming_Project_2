@@ -25,6 +25,11 @@
 
 #include <../Shared/authentication.pb.h>
 
+struct Client
+{
+	int requestId;
+	SOCKET clientSocket;
+};
 
 class Server
 {
@@ -36,20 +41,24 @@ public:
 	void ServerClose();
 	void AcceptClientConnections(SOCKET serverSocket);
 
-	void ReceiveAndPrintIncomingMessage(SOCKET clientSocket);
+	void ReceiveMessagesFromClient(Client* client);
 	void ReceiveAndPrintIncomingMessageOnSeparateThread(SOCKET clientSocket);
-	void SendMessagestoClient(SOCKET clientSocket);
-  
-	
+	void SendMessagestoClient(MessageAndCommand messagetobeSend, Client* client);
+    
+	void SendMessageToAuthenticateServer(MessageAndCommand messagetobeSend, SOCKET server2Scoket);
+	void ReceiveMessagesFromAuthenticateServer(SOCKET sock);
 
-
+	Client* GetClientWithRequestID(int requestId);
 
 
 private:
 	SOCKET serverSocket;
+	SOCKET server2Socket;
 	std::vector<SOCKET> clientSockets;
+	std::vector<Client*> clientList;
 	std::vector<std::thread> clientThreads;
 
+	int clientRequestId;
 };
 
 
