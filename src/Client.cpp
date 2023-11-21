@@ -184,7 +184,7 @@ void Client::ReceiveMessages(SOCKET sock)
 						std::cout << " INTERNAL SERVER ERROR";
 						break;
 					}
-					std::cout << "CREATED ACCOUNT SUCCESFULLY" << std::endl;
+					std::cout << std::endl;
 					break;
 
 
@@ -210,7 +210,7 @@ void Client::ReceiveMessages(SOCKET sock)
 						std::cout << "INVALID CREDENTIALS";
 						break;
 					}
-
+					std::cout << std::endl;
 					break;
 				case MessageAndCommand_Command_AUTHENTICATE_WEB_SUCCESS:
 					std::cout << " ACCOUNT AUTHENTICATE SUCCESS" << std::endl;

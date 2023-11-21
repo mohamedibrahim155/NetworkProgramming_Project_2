@@ -4,7 +4,9 @@
 
 int main()
 {
-
+	std::cout << "**************************************************" << std::endl;
+	std::cout << " AUTHENTICATE SERVICE SERVER" << std::endl;
+	std::cout << "**************************************************" << std::endl;
 
 	MySQLUtil database;
 
