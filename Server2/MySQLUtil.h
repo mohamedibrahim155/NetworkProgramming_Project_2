@@ -54,6 +54,7 @@ private:
 	sql::ResultSet* result;
 
 	bool isConnected;
+	
 };
 
 

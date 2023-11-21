@@ -198,9 +198,9 @@ void AuthenticateServer::ReceiveAndPrintIncomingMessage(SOCKET server1Socket)
 
 					int result;
 
-					 salt = "chuma";
+					 salt = generateSalt();
 
-					 hashPassword = "mycustomHashpassword";
+					 hashPassword = hash(salt + CreatewebDeserializer.plaintext_password());
 
 					result = mysql->AddAccount(CreatewebDeserializer.email().c_str(), salt.c_str(), hashPassword.c_str());
 					if (result == 1)
@@ -357,3 +357,24 @@ void AuthenticateServer::SetSQLUtil(MySQLUtil* mysql)
 		
 	}
 }
+
+std::string AuthenticateServer::generateSalt(int length)
+{
+	const char charset[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+	const int charsetSize = sizeof(charset) - 1;  // Exclude null terminator
+
+	std::random_device rd;
+	std::mt19937 rng(rd());
+	std::uniform_int_distribution<int> dist(0, charsetSize - 1);
+
+	std::string salt;
+	salt.reserve(length);
+
+	for (int i = 0; i < length; ++i) {
+		salt.push_back(charset[dist(rng)]);
+	}
+
+	return salt;
+}
+
+

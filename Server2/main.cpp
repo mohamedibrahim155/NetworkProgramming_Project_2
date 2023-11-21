@@ -1,6 +1,7 @@
 
 #include "AuthenticateServer.h"
 #include "MySQLUtil.h"
+
 int main()
 {
 
@@ -35,5 +36,6 @@ int main()
 	server.SetSQLUtil(&database);
 
 	server.Initialize();
+	
 	return 0;
 }

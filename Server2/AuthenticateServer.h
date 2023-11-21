@@ -26,6 +26,11 @@
 
 #include "../Shared/authentication.pb.h"
 #include"MySQLUtil.h"
+
+#include <iomanip>
+#include <random>
+#include"sha256.h"
+
 class AuthenticateServer
 {
 public:
@@ -40,10 +45,15 @@ public:
 	void SendMessagestoServer1(MessageAndCommand messagetoSend,SOCKET server1Scoket);
 
 	void SetSQLUtil(MySQLUtil* mysql);
+
+	std::string generateSalt(int length = 16);
+
 private:
 	SOCKET serverSocket;
 	std::vector<SOCKET> clientSockets;
 	std::vector<std::thread> clientThreads;
 	MySQLUtil* mysql;
+
+	SHA256 hash;
 };
 

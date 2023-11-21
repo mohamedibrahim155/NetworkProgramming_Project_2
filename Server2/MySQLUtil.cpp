@@ -1,5 +1,5 @@
 #include "MySQLUtil.h"
-
+#include "sha256.h"
 MySQLUtil::MySQLUtil() :driver(nullptr), isConnected(false), statement(nullptr), result(nullptr)
 {
 }
@@ -93,7 +93,7 @@ MySQLUtil::~MySQLUtil()
 	 statement->setString(1, email);
 	 statement->setString(2, salt);
 	 statement->setString(3, password);
-	 statement->setBigInt(4, "45");
+	 statement->setBigInt(4, "10");
 
 	 try
 	 {
@@ -154,14 +154,14 @@ MySQLUtil::~MySQLUtil()
 		 if (result->next())
 		 {
 
-			// SHA256 hasher;
+			 SHA256 hasher;
 
 			 std::string passwordDB = result->getString("hashed_password");
 			 std::string salt = result->getString("salt");
 			 userId = result->getInt("userId");
 
-			 //std::string hashedPassword = hasher(salt + password);
-			 std::string hashedPassword = password;
+			 std::string hashedPassword = hasher(salt + password);
+			 //std::string hashedPassword = password;
 
 			 if (passwordDB == hashedPassword)
 			 {
