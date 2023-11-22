@@ -1,3 +1,5 @@
+CREATE DATABASE  IF NOT EXISTS `gdp` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+USE `gdp`;
 -- MySQL dump 10.13  Distrib 8.0.34, for Win64 (x86_64)
 --
 -- Host: 127.0.0.1    Database: gdp
@@ -24,12 +26,14 @@ DROP TABLE IF EXISTS `web_auth`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `web_auth` (
   `id` bigint NOT NULL AUTO_INCREMENT,
-  `email` varchar(255) DEFAULT NULL,
-  `salt` varchar(64) DEFAULT NULL,
-  `hashed_password` varchar(64) DEFAULT NULL,
-  `userId` bigint DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `email` varchar(255) NOT NULL,
+  `salt` varchar(64) NOT NULL,
+  `hashed_password` varchar(64) NOT NULL,
+  `userId` bigint NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email_UNIQUE` (`email`),
+  UNIQUE KEY `id_UNIQUE` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -38,7 +42,7 @@ CREATE TABLE `web_auth` (
 
 LOCK TABLES `web_auth` WRITE;
 /*!40000 ALTER TABLE `web_auth` DISABLE KEYS */;
-INSERT INTO `web_auth` VALUES (1,'ibrahim@gmail.com','asdas','pass',7),(2,'mohamedIbrahim@gmail.com','chuma','mycustomHashpassword',6),(3,'ibrahim@gmail.com','chuma','mycustomHashpassword',7),(4,'ibu@gmail.com','chuma','mycustomHashpassword',8),(5,'ibrahimdev@gmail.com','5LMytTTbbxvsVxxA','17733e708c7d1d02492e5ba12c04b3a1600cd6280c6e1e78705d94bf4cb23920',9);
+INSERT INTO `web_auth` VALUES (10,'ibrahim15@gmail.com','1mRHosfLdiNREAgY','e8c3bae952ce79b3073651a6d2e1dec5069a2e2d9457210a6de224a845a9eb57',14);
 /*!40000 ALTER TABLE `web_auth` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -51,4 +55,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-11-21 17:53:30
+-- Dump completed on 2023-11-21 19:34:00
