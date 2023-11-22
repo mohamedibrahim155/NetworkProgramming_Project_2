@@ -93,7 +93,7 @@ MySQLUtil::~MySQLUtil()
 	 statement->setString(1, email);
 	 statement->setString(2, salt);
 	 statement->setString(3, password);
-	 statement->setBigInt(4, "10");
+	 statement->setBigInt(4, "45");
 
 	 try
 	 {

@@ -75,6 +75,8 @@ void Client::Initialize()
 	}
 	printf("connected to server Successfully in client\n");
 
+
+	std::cout << "ENTER COMMAND REGISTER OR AUTHENTICATE :";
 	std::thread receiveThread(&Client::ReceiveMessages, this, clientSocket);
 
 	SendToServer(clientSocket);
@@ -158,11 +160,7 @@ void Client::ReceiveMessages(SOCKET sock)
 				switch (messageAndCommand.command())
 				{
 
-				case MessageAndCommand_Command_CREATE_ACCOUNT_WEB:
-					CreatewebDeserializer.ParseFromString(messageAndCommand.messagedata());
-					std::cout << "EMAIL : " << CreatewebDeserializer.email() << std::endl;
-					std::cout << "PASSWORD : " << CreatewebDeserializer.plaintext_password() << std::endl;
-					break;
+
 				case MessageAndCommand_Command_CREATE_ACCOUNT_WEB_SUCCESS:
 
 					std::cout << "ACCOUNT REGISTERED SUCCESSFULLY" << std::endl;
@@ -189,11 +187,7 @@ void Client::ReceiveMessages(SOCKET sock)
 
 
 
-				case MessageAndCommand_Command_AUTHENTICATE_WEB:
-					AuthenticateWebDeserializer.ParseFromString(messageAndCommand.messagedata());
-					std::cout << "EMAIL : " << AuthenticateWebDeserializer.email() << std::endl;
-					std::cout << "PASSWORD : " << AuthenticateWebDeserializer.plaintext_password() << std::endl;
-					break;
+
 				case MessageAndCommand_Command_AUTHENTICATE_WEB_FAILURE:
 				
 
@@ -213,11 +207,15 @@ void Client::ReceiveMessages(SOCKET sock)
 					std::cout << std::endl;
 					break;
 				case MessageAndCommand_Command_AUTHENTICATE_WEB_SUCCESS:
+					AuthenticateWebSuccess.ParseFromString(messageAndCommand.messagedata());
 					std::cout << " ACCOUNT AUTHENTICATE SUCCESS" << std::endl;
+					std::cout << " Account Created On : " << AuthenticateWebSuccess.creation_date() << std::endl;
+
 					break;
 
 				}
 
+				std::cout << "ENTER COMMAND REGISTER OR AUTHENTICATE :";
 			}
 		}
 
@@ -228,10 +226,9 @@ void Client::SendToServer(SOCKET sock)
 {
 	while (true)
 	{
-
 		std::string serializeString;
 		std::string userInput, email, password;
-		std::cout << "ENTER COMMAND REGISTER OR AUTHENTICATE : ";
+
 		std::cin >> userInput;
 		std::cout << "ENTER EMAIL : ";
 		std::cin >> email;
@@ -280,6 +277,8 @@ void Client::SendToServer(SOCKET sock)
 			std::cerr << "Send failed." << std::endl;
 			break;
 		}
+
+		
 
 	}
 	
