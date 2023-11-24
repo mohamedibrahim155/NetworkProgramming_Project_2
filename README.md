@@ -2,9 +2,12 @@
 Network Programming Project_2
 
 
-
+Git link : https://github.com/mohamedibrahim155/NetworkProgramming_Project_2.git
 ###### NOTE : PLEASE PULL THE BRANCH "LibsUpdated"########
 
+This is a group project done by( worked in discord together) :
+Mohamed Ibrahim Sheik Dawood Salahudeen (m_sheikdawoodsalahud@fanshaweonline.ca)
+Uphendra Nagarajan (u_nagarajan@fanshaweonline.ca)
 ******************************************************************************************************************
 Build Instruction:
 
@@ -47,7 +50,7 @@ Questions attended :
 		* Used Length prefix serialization (for eg. in send request: Client.cpp -> Line no: (266 -274)/ in receive request Client.cpp -> line No: (122-223)
 		* User can create a new account (AuthencateServer.cpp -> Line no: 205)
 		* Using Hash, salt  and adding to SQL (AuthencateServer.cpp -> Line no: 201-205)
-		* Response sending succes or failure(AuthencateServer.cpp -> Line no: 206-240)
+		* Response sending success or failure(AuthencateServer.cpp -> Line no: 206-240)
 		
 		 Authenticate account :
 		* Hashing and comparing with Database (AuthencateServer.cpp-> Line no: 260)
