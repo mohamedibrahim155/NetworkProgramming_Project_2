@@ -18,6 +18,15 @@ Build steps :
 Step 1 - Build "Server2" project
 Step 2 - Build "Server1" project
 Step 3 - Build "Client" project
+
+//////// IMPORTANT STEP REQUIRED TO UPDATE PASSWORD  ///////////////////////////
+
+* Open ProjectDir/Database file and add both the .mysql files to your database
+* Open "Server2" Project -> main.cpp -> Line number : 13
+* PLEASE change the password from "ibrahim" to your SQL password
+/////////////////////////////////////////////////////////////////////////////////
+
+
 ******************************************************************************************************************
 
 Working Flow: 
@@ -69,3 +78,5 @@ Questions attended :
 		* Check functions receivemessages() and SendToServer() in (Client.cpp)
 		
 ******************************************************************************************************************
+
+youtube link : https://youtu.be/fuk3BaVRIeI
